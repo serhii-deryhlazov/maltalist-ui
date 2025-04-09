@@ -1,0 +1,29 @@
+<div id="create-listing-page">
+    <h1>Create a New Listing</h1>
+    <form id="create-listing-form">
+        <input type="text" id="listing-name" placeholder="Listing Name" required />
+        <textarea id="listing-description" placeholder="Description" required></textarea>
+        <button type="submit">Create Listing</button>
+    </form>
+</div>
+  
+<script>
+    import { CreateListingService } from './js/services/createListingService.js';
+
+    // Handle form submission to create a new listing
+    document.getElementById('create-listing-form').onsubmit = async (event) => {
+        event.preventDefault();
+
+        const name = document.getElementById('listing-name').value;
+        const description = document.getElementById('listing-description').value;
+
+        const newListing = await CreateListingService.createListing({ name, description });
+
+        if (newListing) {
+        alert('Listing created successfully!');
+        } else {
+        alert('Failed to create listing.');
+        }
+    };
+</script>
+  

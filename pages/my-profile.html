@@ -1,0 +1,25 @@
+<div id="user-profile-page">
+    <h1>User Profile</h1>
+    <div id="profile-details">
+        <!-- Profile data will be populated here -->
+    </div>
+</div>
+
+<script>
+    import { UserProfileService } from './js/services/userProfileService.js';
+
+    // Fetch user profile when the page loads
+    window.onload = async () => {
+        const profile = await UserProfileService.getUserProfile();
+        if (profile) {
+        document.getElementById('profile-details').innerHTML = `
+            <p>User: ${profile.userName}</p>
+            <h3>Your Listings</h3>
+            <div>${profile.listings.map(listing => `<p>${listing.name} - ${listing.description}</p>`).join('')}</div>
+        `;
+        } else {
+        document.getElementById('profile-details').innerHTML = '<p>Profile not found.</p>';
+        }
+    };
+</script>
+  
