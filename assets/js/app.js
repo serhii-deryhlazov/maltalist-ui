@@ -1,4 +1,6 @@
-// assets/js/app.js
+import { UserProfileService } from './UserProfileService.js';
+import { CacheService } from './CacheService.js';
+
 $(document).ready(function() {
     function loadContent(page) {
         $('#content').html('<h1>Loading ' + page + '...</h1>');
@@ -20,33 +22,21 @@ $(document).ready(function() {
 
     function loadHomePageData() {
         window.onGoogleSignIn = async function (response) {
-            const credential = response.credential;
-            const payload = parseJwt(credential); // decode Google ID token
-            
-            const userId = parseInt(payload.sub);
-            const email = payload.email;
-            const name = `${payload.given_name} ${payload.family_name}`;
-            const picture = payload.picture;
-            
-            let user = await HttpService.get(`/api/UserProfile/${userId}`);
-            
-            if (!user) {
-                // Register user if not exists
-                const newUser = {
-                id: userId,
-                userName: name,
-                email: email,
-                userPicture: picture
-                };
-            
-                await HttpService.post(`/api/UserProfile`, newUser);
-            
-                // Get the user again
-                user = await HttpService.get(`/api/UserProfile/${userId}`);
+            try {
+              const credential = response.credential;
+          
+              const user = await UserProfileService.verifyGoogleLogin(credential);
+          
+              if (user && user.id) {
+                CacheService.set("current_user", user);
+                console.log("Logged in as:", user);
+              } else {
+                alert("Login failed on server.");
+              }
+            } catch (err) {
+              console.error("Google login error:", err);
+              alert("Google login failed.");
             }
-            
-            CacheService.set("current_user", user);
-            console.log("Logged in user:", user);
         };
     }
     // Helper to decode JWT (Google's ID token)

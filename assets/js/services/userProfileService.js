@@ -30,6 +30,10 @@ class UserProfileService {
         return false;
       });
   }
+
+  static async verifyGoogleLogin(idToken) {
+    return await HttpService.post('/api/GoogleAuth/login', { idToken });
+  }
 }
 
 export { UserProfileService };
