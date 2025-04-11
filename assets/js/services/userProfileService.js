@@ -1,4 +1,4 @@
-import { HttpService } from 'httpService.js';
+import { HttpService } from './httpService.js';
 
 class UserProfileService {
   static async getUserProfile(id) {
