@@ -60,7 +60,7 @@ $(document).ready(function() {
                                 const currentUser = CacheService.get("current_user");
                                 currentUser.userName = newName;
                                 CacheService.set("current_user", currentUser);
-                                const updatedProfile = await UserProfileService.updatedProfile(profile.id, currentUser);
+                                const updatedProfile = await UserProfileService.updateUserProfile(profile.id, currentUser);
 
                                 if (updatedProfile) {
                                     alert('Profile updated successfully!');
