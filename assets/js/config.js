@@ -20,5 +20,4 @@ const Config = {
     ERROR_MESSAGES
 };
 
-// Optional: if you're using modules, you can export Config this way
-// export default Config;
+export default Config;
