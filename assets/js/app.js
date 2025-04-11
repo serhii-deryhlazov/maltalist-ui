@@ -39,12 +39,6 @@ $(document).ready(function() {
             }
         };
     }
-    // Helper to decode JWT (Google's ID token)
-    function parseJwt(token) {
-        const base64Url = token.split('.')[1];
-        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-        return JSON.parse(atob(base64));
-    }
 
     function loadListingsPageData() {
         listingsService.getAllListings()
