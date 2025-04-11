@@ -10,15 +10,12 @@ class UserProfileService {
     }
 
     static async updateUserProfile(id, data) {
-        return await fetch(`/api/UserProfile/${id}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data)
-        }).then(res => res.ok ? res.json() : null)
+        return await HttpService.put(`/api/UserProfile/${id}`, data)
+        .then(res => res.ok ? res.json() : null)
           .catch(err => {
               console.error('PUT request failed:', err);
               return null;
-          });
+        });
     }
 
     static async updateUserName(id, userName) {
