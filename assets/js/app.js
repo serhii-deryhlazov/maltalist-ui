@@ -23,19 +23,19 @@ $(document).ready(function() {
     function loadHomePageData() {
         window.onGoogleSignIn = async function (response) {
             try {
-              const credential = response.credential;
-          
-              const user = await UserProfileService.verifyGoogleLogin(credential);
-          
-              if (user && user.id) {
-                CacheService.set("current_user", user);
-                console.log("Logged in as:", user);
-              } else {
-                alert("Login failed on server.");
-              }
+                const credential = response.credential;
+        
+                const user = await UserProfileService.verifyGoogleLogin(credential);
+        
+                if (user && user.id) {
+                    CacheService.set("current_user", user);
+                    console.log("Logged in as:", user);
+                } else {
+                    alert("Login failed on server.");
+                }
             } catch (err) {
-              console.error("Google login error:", err);
-              alert("Google login failed.");
+                console.error("Google login error:", err);
+                alert("Google login failed.");
             }
         };
     }
@@ -103,16 +103,21 @@ $(document).ready(function() {
                     $('#formStatus').html('<p>Error creating listing. Please try again.</p>');
                 });
         });
-    }    
+    }
 
     function loadUserProfilePage() {
-        userProfileService.getUserProfile(1)  // Assume userId = 1
-            .then(profile => {
-                $('#content').html('<h1>My Profile</h1><p>' + profile.name + '</p>');
-            })
-            .catch(error => {
-                $('#content').html('<h1>Error loading profile</h1>');
-            });
+        const currentUser = CacheService.get("current_user");
+        if (currentUser && currentUser.id) {
+            userProfileService.getUserProfile(currentUser.id)
+                .then(profile => {
+                    $('#content').html('<h1>My Profile</h1><p>' + profile.name + '</p>');
+                })
+                .catch(error => {
+                    $('#content').html('<h1>Error loading profile</h1>');
+                });
+        } else {
+            $('#content').html('<h1>No User Logged In</h1>');
+        }
     }
 
     // Load home page by default
@@ -132,6 +137,9 @@ $(document).ready(function() {
     });
 
     $('#profile').click(function() {
-        loadContent('My Profile');
+        const currentUser = CacheService.get("current_user");
+        if (currentUser && currentUser.id) {
+            window.location.href = `/profile/${currentUser.id}`;
+        }
     });
 });
