@@ -8,7 +8,7 @@ $(document).ready(function() {
         
         $('#content').html(`<h1>Loading ${page}...</h1>`);
         
-        $('#content').load(pageUrl, function(response, status, xhr) {
+        $('#content').load(pageUrl, async function(response, status, xhr) {
             if (status === 'error') {
                 console.error(`Failed to load ${pageUrl}: ${xhr.status} ${xhr.statusText}`);
                 $('#content').html(`<h1>Error loading ${page}</h1>`);
@@ -37,7 +37,7 @@ $(document).ready(function() {
                 // }
                 const userId = window.location.pathname.split('/')[2];
                 const currentUser = JSON.parse(localStorage.getItem('current_user'));
-                const profile = UserProfileService.getUserProfile(userId);
+                const profile = await UserProfileService.getUserProfile(userId);
 
                 console.log("Current User:", currentUser);
                 console.log("Profile Details:", profile);
@@ -45,8 +45,6 @@ $(document).ready(function() {
                 if (profile) {
                     let profileDetailsHTML = `
                         <p>User: ${profile.userName}</p>
-                        <h3>Your Listings</h3>
-                        <div>${profile.listings.map(listing => `<p>${listing.name} - ${listing.description}</p>`).join('')}</div>
                     `;
 
                     if (currentUser && currentUser.id === profile.id) {
