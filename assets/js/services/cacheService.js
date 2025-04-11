@@ -12,4 +12,5 @@ class CacheService {
         localStorage.removeItem(key);
     }
 }
-  
+
+export { CacheService };
