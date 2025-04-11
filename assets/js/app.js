@@ -19,14 +19,41 @@ $(document).ready(function() {
     }
 
     function loadHomePageData() {
-        homeService.getHomeData()
-            .then(data => {
-                // Process and display the home page data here
-                $('#content').html('<h1>Home</h1><p>' + data.homeContent + '</p>');
-            })
-            .catch(error => {
-                $('#content').html('<h1>Error loading home data</h1>');
-            });
+        window.onGoogleSignIn = async function (response) {
+            const credential = response.credential;
+            const payload = parseJwt(credential); // decode Google ID token
+            
+            const userId = parseInt(payload.sub);
+            const email = payload.email;
+            const name = `${payload.given_name} ${payload.family_name}`;
+            const picture = payload.picture;
+            
+            let user = await HttpService.get(`/api/UserProfile/${userId}`);
+            
+            if (!user) {
+                // Register user if not exists
+                const newUser = {
+                id: userId,
+                userName: name,
+                email: email,
+                userPicture: picture
+                };
+            
+                await HttpService.post(`/api/UserProfile`, newUser);
+            
+                // Get the user again
+                user = await HttpService.get(`/api/UserProfile/${userId}`);
+            }
+            
+            CacheService.set("current_user", user);
+            console.log("Logged in user:", user);
+        };
+    }
+    // Helper to decode JWT (Google's ID token)
+    function parseJwt(token) {
+        const base64Url = token.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        return JSON.parse(atob(base64));
     }
 
     function loadListingsPageData() {

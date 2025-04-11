@@ -1,23 +1,17 @@
-<div id="home-page">
-    <h1>Welcome to Maltalist</h1>
-    <div id="featured-listings">
-        <!-- Featured Listings will be populated here -->
-    </div>
-</div>
-  
-<script>
-    import { HomeService } from './js/services/homeService.js';
+<!-- Load Google's Identity Services library -->
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 
-    // Fetch home data when the page loads
-    window.onload = async () => {
-        const homeData = await HomeService.getHomeData();
-        if (homeData) {
-        document.getElementById('featured-listings').innerHTML = homeData.featuredListings
-            .map(listing => `<p>${listing}</p>`)
-            .join('');
-        } else {
-        document.getElementById('featured-listings').innerHTML = '<p>No featured listings available.</p>';
-        }
-    };
-</script>
-  
+<div id="g_id_onload"
+     data-client_id="763140433455-9tudkmcpnbec0dv4ndej56r1kho6hd3o.apps.googleusercontent.com"
+     data-callback="onGoogleSignIn"
+     data-auto_prompt="false">
+</div>
+
+<div class="g_id_signin"
+     data-type="standard"
+     data-shape="rectangular"
+     data-theme="outline"
+     data-text="sign_in_with"
+     data-size="large"
+     data-logo_alignment="left">
+</div>
