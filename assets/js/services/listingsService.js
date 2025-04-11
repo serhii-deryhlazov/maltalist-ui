@@ -1,4 +1,4 @@
-import { HttpService } from './HttpService.js';
+import { HttpService } from 'httpService.js';
 
 class ListingService {
   static async getAllListings(params = {}) {
