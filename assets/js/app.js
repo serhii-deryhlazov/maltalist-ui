@@ -22,19 +22,6 @@ $(document).ready(function() {
             } else if (page === 'Create Listing') {
                 loadCreateListingPage();
             } else if (page === 'My Profile') {
-                // const currentUser = CacheService.get("current_user");
-                // if (currentUser && currentUser.id) {
-                //     UserProfileService.getUserProfile(currentUser.id)
-                //         .then(profile => {
-                //             $('#content').html(`<h1>${profile.userName}'s Profile</h1><p>${profile.bio}</p>`);
-                //         })
-                //         .catch(error => {
-                //             console.error("Error loading user profile:", error);
-                //             $('#content').html('<h1>Error loading profile</h1>');
-                //         });
-                // } else {
-                //     $('#content').html('<h1>No User Logged In</h1>');
-                // }
                 const userId = window.location.pathname.split('/')[2];
                 const currentUser = JSON.parse(localStorage.getItem('current_user'));
                 const profile = await UserProfileService.getUserProfile(userId);
@@ -70,7 +57,10 @@ $(document).ready(function() {
                             document.getElementById('edit-profile-form').addEventListener('submit', async (e) => {
                                 e.preventDefault();
                                 const newName = document.getElementById('name').value;
-                                const updatedProfile = await UserProfileService.updateUserName(profile.id, newName);
+                                const currentUser = CacheService.get("current_user");
+                                currentUser.userName = newName;
+                                CacheService.set("current_user", currentUser);
+                                const updatedProfile = await UserProfileService.updatedProfile(profile.id, currentUser);
 
                                 if (updatedProfile) {
                                     alert('Profile updated successfully!');

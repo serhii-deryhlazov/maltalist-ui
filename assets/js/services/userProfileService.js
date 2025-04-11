@@ -18,10 +18,6 @@ class UserProfileService {
         });
     }
 
-    static async updateUserName(id, userName) {
-        return await this.updateUserProfile(id, { userName });
-    }
-
     static async deleteUserProfile(id) {
         return await fetch(`/api/UserProfile/${id}`, {
             method: 'DELETE'
