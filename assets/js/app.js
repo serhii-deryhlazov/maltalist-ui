@@ -1,5 +1,5 @@
-import { UserProfileService } from './UserProfileService.js';
-import { CacheService } from './CacheService.js';
+import { UserProfileService } from './services/userProfileService.js';
+import { CacheService } from './services/cacheService.js';
 
 $(document).ready(function() {
     function loadContent(page) {
