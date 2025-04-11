@@ -1,20 +1,28 @@
-import { UserProfileService } from './services/userProfileService.js';
-import { CacheService } from './services/cacheService.js';
+import { UserProfileService } from '/assets/js/services/userProfileService.js';
+import { CacheService } from '/assets/js/services/cacheService.js';
 
 $(document).ready(function() {
     function loadContent(page) {
-        $('#content').html('<h1>Loading ' + page + '...</h1>');
-
-        $('#content').load('pages/' + page.toLowerCase().replace(' ', '-') + '.html', function() {
+        const pageFile = page.toLowerCase().replace(' ', '-') + '.html';
+        const pageUrl = `/pages/${pageFile}`;
+        
+        $('#content').html(`<h1>Loading ${page}...</h1>`);
+        
+        $('#content').load(pageUrl, function(response, status, xhr) {
+            if (status === 'error') {
+                console.error(`Failed to load ${pageUrl}: ${xhr.status} ${xhr.statusText}`);
+                $('#content').html(`<h1>Error loading ${page}</h1>`);
+                return;
+            }
+            
             if (page === 'Home') {
                 loadHomePageData();
             } else if (page === 'All Listings') {
                 loadListingsPageData();
             } else if (page === 'Create Listing') {
                 loadCreateListingPage();
-            } else if (page === 'My Profile') {
-                loadUserProfilePage();
             }
+            // No extra logic for 'My Profile'; my-profile.js handles it
         });
     }
 
@@ -22,9 +30,7 @@ $(document).ready(function() {
         window.onGoogleSignIn = async function (response) {
             try {
                 const credential = response.credential;
-        
                 const user = await UserProfileService.verifyGoogleLogin(credential);
-        
                 if (user && user.id) {
                     CacheService.set("current_user", user);
                     console.log("Logged in as:", user);
@@ -49,6 +55,7 @@ $(document).ready(function() {
                 $('#content').html(listingsHtml);
             })
             .catch(error => {
+                console.error("Error loading listings:", error);
                 $('#content').html('<h1>Error loading listings</h1>');
             });
     }
@@ -77,67 +84,66 @@ $(document).ready(function() {
             </form>
             <div id="formStatus"></div>
         `;
-    
         $('#content').html(createListingForm);
-    
-        // Handle form submission
         $('#createListingForm').on('submit', function(e) {
-            e.preventDefault();  // Prevent form from submitting the traditional way
-    
+            e.preventDefault();
             const listingData = {
                 title: $('#title').val(),
                 description: $('#description').val(),
                 price: $('#price').val(),
                 category: $('#category').val()
             };
-    
-            // Call the service to submit the listing (replace with actual service call)
             listingsService.createListing(listingData)
                 .then(response => {
                     $('#formStatus').html('<p>Listing created successfully!</p>');
-                    $('#createListingForm')[0].reset();  // Reset form
+                    $('#createListingForm')[0].reset();
                 })
                 .catch(error => {
+                    console.error("Error creating listing:", error);
                     $('#formStatus').html('<p>Error creating listing. Please try again.</p>');
                 });
         });
     }
 
-    function loadUserProfilePage() {
-        const currentUser = CacheService.get("current_user");
-        if (currentUser && currentUser.id) {
-            userProfileService.getUserProfile(currentUser.id)
-                .then(profile => {
-                    $('#content').html('<h1>My Profile</h1><p>' + profile.name + '</p>');
-                })
-                .catch(error => {
-                    $('#content').html('<h1>Error loading profile</h1>');
-                });
-        } else {
-            $('#content').html('<h1>No User Logged In</h1>');
-        }
+    // Check URL on page load
+    const path = window.location.pathname;
+    if (path.startsWith('/profile/')) {
+        loadContent('My Profile');
+    } else if (path === '/listings') {
+        loadContent('All Listings');
+    } else if (path === '/create') {
+        loadContent('Create Listing');
+    } else {
+        loadContent('Home');
     }
 
-    // Load home page by default
-    loadContent('Home');
-
     // Bind click events to navigation links
-    $('#home').click(function() {
+    $('#home').click(function(e) {
+        e.preventDefault();
         loadContent('Home');
+        history.pushState({}, '', '/');
     });
 
-    $('#listings').click(function() {
+    $('#listings').click(function(e) {
+        e.preventDefault();
         loadContent('All Listings');
+        history.pushState({}, '', '/listings');
     });
 
-    $('#create').click(function() {
+    $('#create').click(function(e) {
+        e.preventDefault();
         loadContent('Create Listing');
+        history.pushState({}, '', '/create');
     });
 
-    $('#profile').click(function() {
+    $('#profile').click(function(e) {
+        e.preventDefault();
         const currentUser = CacheService.get("current_user");
         if (currentUser && currentUser.id) {
-            window.location.href = `/profile/${currentUser.id}`;
+            loadContent('My Profile');
+            history.pushState({}, '', `/profile/${currentUser.id}`);
+        } else {
+            $('#content').html('<h1>No User Logged In</h1>');
         }
     });
 });
