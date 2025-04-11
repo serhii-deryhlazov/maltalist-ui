@@ -1,18 +1,16 @@
 <div id="user-profile-page">
     <h1>User Profile</h1>
     <div id="profile-details">
-        <!-- Profile data will be populated here -->
     </div>
 </div>
 
 <script>
-    import { UserProfileService } from './js/services/userProfileService.js';
+    import { UserProfileService } from '../js/services/userProfileService.js';
 
-    // Fetch user profile when the page loads
     window.onload = async () => {
-        const userId = window.location.pathname.split('/')[2]; // Extract user ID from URL
-        const currentUser = JSON.parse(localStorage.getItem('current_user')); // Assuming you store the current user in localStorage or session
-        const profile = await UserProfileService.getUserProfile(userId); // Fetch profile based on ID
+        const userId = window.location.pathname.split('/')[2];
+        const currentUser = JSON.parse(localStorage.getItem('current_user'));
+        const profile = await UserProfileService.getUserProfile(userId);
 
         if (profile) {
             let profileDetailsHTML = `
@@ -21,7 +19,6 @@
                 <div>${profile.listings.map(listing => `<p>${listing.name} - ${listing.description}</p>`).join('')}</div>
             `;
 
-            // Check if the profile belongs to the current user
             if (currentUser && currentUser.id === profile.id) {
                 profileDetailsHTML += `
                     <button id="edit-profile-btn">Edit Profile</button>
@@ -30,7 +27,6 @@
 
             document.getElementById('profile-details').innerHTML = profileDetailsHTML;
 
-            // Show the edit form when the "Edit Profile" button is clicked
             const editProfileBtn = document.getElementById('edit-profile-btn');
             if (editProfileBtn) {
                 editProfileBtn.addEventListener('click', () => {
@@ -42,7 +38,7 @@
                             <button type="submit">Save</button>
                         </form>
                     `;
-                    // Handle form submission
+
                     document.getElementById('edit-profile-form').addEventListener('submit', async (e) => {
                         e.preventDefault();
                         const newName = document.getElementById('name').value;
@@ -50,7 +46,6 @@
 
                         if (updatedProfile) {
                             alert('Profile updated successfully!');
-                            // Optionally, reload the profile to show the updated name
                             window.location.reload();
                         } else {
                             alert('Error updating profile.');

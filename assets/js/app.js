@@ -5,9 +5,7 @@ $(document).ready(function() {
     function loadContent(page) {
         $('#content').html('<h1>Loading ' + page + '...</h1>');
 
-        // Load content from the respective HTML page inside /pages folder
         $('#content').load('pages/' + page.toLowerCase().replace(' ', '-') + '.html', function() {
-            // Once content is loaded, we can use the corresponding service for that page
             if (page === 'Home') {
                 loadHomePageData();
             } else if (page === 'All Listings') {
