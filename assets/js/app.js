@@ -49,19 +49,23 @@ $(document).ready(function() {
                                 <h2>Edit Profile</h2>
                                 <form id="edit-profile-form">
                                     <label for="name">New Name:</label>
-                                    <input type="text" id="name" name="name" value="${profile.userName}" required>
+                                    <input type="text" id="name" name="name" value="${profile.userName || ''}" required>
+                                    <label for="phoneNumber">Phone Number:</label>
+                                    <input type="tel" id="phoneNumber" name="phoneNumber" value="${profile.phoneNumber || ''}">
                                     <button type="submit">Save</button>
                                 </form>
                             `;
-
+                    
                             document.getElementById('edit-profile-form').addEventListener('submit', async (e) => {
                                 e.preventDefault();
                                 const newName = document.getElementById('name').value;
+                                const newPhoneNumber = document.getElementById('phoneNumber').value;
                                 const currentUser = CacheService.get("current_user");
                                 currentUser.userName = newName;
+                                currentUser.phoneNumber = newPhoneNumber;
                                 CacheService.set("current_user", currentUser);
                                 await UserProfileService.updateUserProfile(profile.id, currentUser);
-
+                    
                                 window.location.reload();
                             });
                         });
