@@ -22,59 +22,63 @@ $(document).ready(function() {
             } else if (page === 'Create Listing') {
                 loadCreateListingPage();
             } else if (page === 'My Profile') {
-                const userId = window.location.pathname.split('/')[2];
-                const currentUser = JSON.parse(localStorage.getItem('current_user'));
-                const profile = await UserProfileService.getUserProfile(userId);
-
-                console.log("Current User:", currentUser);
-                console.log("Profile Details:", profile);
-
-                if (profile) {
-                    let profileDetailsHTML = `
-                        <p>User: ${profile.userName}</p>
-                    `;
-
-                    if (currentUser && currentUser.id === profile.id) {
-                        profileDetailsHTML += `
-                            <button id="edit-profile-btn">Edit Profile</button>
-                        `;
-                    }
-
-                    document.getElementById('profile-details').innerHTML = profileDetailsHTML;
-
-                    const editProfileBtn = document.getElementById('edit-profile-btn');
-                    if (editProfileBtn) {
-                        editProfileBtn.addEventListener('click', () => {
-                            document.getElementById('profile-details').innerHTML = `
-                                <h2>Edit Profile</h2>
-                                <form id="edit-profile-form">
-                                    <label for="name">New Name:</label>
-                                    <input type="text" id="name" name="name" value="${profile.userName || ''}" required>
-                                    <label for="phoneNumber">Phone Number:</label>
-                                    <input type="tel" id="phoneNumber" name="phoneNumber" value="${profile.phoneNumber || ''}">
-                                    <button type="submit">Save</button>
-                                </form>
-                            `;
-                    
-                            document.getElementById('edit-profile-form').addEventListener('submit', async (e) => {
-                                e.preventDefault();
-                                const newName = document.getElementById('name').value;
-                                const newPhoneNumber = document.getElementById('phoneNumber').value;
-                                const currentUser = CacheService.get("current_user");
-                                currentUser.userName = newName;
-                                currentUser.phoneNumber = newPhoneNumber;
-                                CacheService.set("current_user", currentUser);
-                                await UserProfileService.updateUserProfile(profile.id, currentUser);
-                    
-                                window.location.reload();
-                            });
-                        });
-                    }
-                } else {
-                    document.getElementById('profile-details').innerHTML = '<p>Profile not found.</p>';
-                }
+                loadProfilePageData();
             }
         });
+    }
+
+    async function loadProfilePageData() {
+        const userId = window.location.pathname.split('/')[2];
+        const currentUser = JSON.parse(localStorage.getItem('current_user'));
+        const profile = await UserProfileService.getUserProfile(userId);
+
+        console.log("Current User:", currentUser);
+        console.log("Profile Details:", profile);
+
+        if (profile) {
+            let profileDetailsHTML = `
+                <p>User: ${profile.userName}</p>
+            `;
+
+            if (currentUser && currentUser.id === profile.id) {
+                profileDetailsHTML += `
+                    <button id="edit-profile-btn">Edit Profile</button>
+                `;
+            }
+
+            document.getElementById('profile-details').innerHTML = profileDetailsHTML;
+
+            const editProfileBtn = document.getElementById('edit-profile-btn');
+            if (editProfileBtn) {
+                editProfileBtn.addEventListener('click', () => {
+                    document.getElementById('profile-details').innerHTML = `
+                        <h2>Edit Profile</h2>
+                        <form id="edit-profile-form">
+                            <label for="name">New Name:</label>
+                            <input type="text" id="name" name="name" value="${profile.userName || ''}" required>
+                            <label for="phoneNumber">Phone Number:</label>
+                            <input type="tel" id="phoneNumber" name="phoneNumber" value="${profile.phoneNumber || ''}">
+                            <button type="submit">Save</button>
+                        </form>
+                    `;
+            
+                    document.getElementById('edit-profile-form').addEventListener('submit', async (e) => {
+                        e.preventDefault();
+                        const newName = document.getElementById('name').value;
+                        const newPhoneNumber = document.getElementById('phoneNumber').value;
+                        const currentUser = CacheService.get("current_user");
+                        currentUser.userName = newName;
+                        currentUser.phoneNumber = newPhoneNumber;
+                        CacheService.set("current_user", currentUser);
+                        await UserProfileService.updateUserProfile(profile.id, currentUser);
+            
+                        window.location.reload();
+                    });
+                });
+            }
+        } else {
+            document.getElementById('profile-details').innerHTML = '<p>Profile not found.</p>';
+        }
     }
 
     function loadHomePageData() {
@@ -112,47 +116,65 @@ $(document).ready(function() {
     }
 
     function loadCreateListingPage() {
-        const createListingForm = `
-            <h1>Create Listing</h1>
-            <form id="createListingForm">
+        const mainContent = document.getElementById('content');
+        if (!mainContent) {
+            console.error('Main content container not found');
+            return;
+        }
+    
+        mainContent.innerHTML = `
+            <h2>Create a New Listing</h2>
+            <form id="create-listing-form">
                 <div>
-                    <label for="title">Title:</label>
-                    <input type="text" id="title" name="title" required>
+                    <label for="name">Title:</label>
+                    <input type="text" id="name" name="name" required>
                 </div>
                 <div>
                     <label for="description">Description:</label>
                     <textarea id="description" name="description" required></textarea>
                 </div>
                 <div>
-                    <label for="price">Price:</label>
-                    <input type="number" id="price" name="price" required>
+                    <label for="price">Price ($):</label>
+                    <input type="number" id="price" name="price" step="0.01" min="0" required>
                 </div>
                 <div>
                     <label for="category">Category:</label>
-                    <input type="text" id="category" name="category" required>
+                    <input type="text" id="category" name="category" placeholder="e.g., Electronics">
                 </div>
-                <button type="submit">Submit Listing</button>
+                <button type="submit">Create Listing</button>
             </form>
-            <div id="formStatus"></div>
+            <div id="form-message"></div>
         `;
-        $('#content').html(createListingForm);
-        $('#createListingForm').on('submit', function(e) {
+    
+        const form = document.getElementById('create-listing-form');
+        form.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const listingData = {
-                title: $('#title').val(),
-                description: $('#description').val(),
-                price: $('#price').val(),
-                category: $('#category').val()
+            const formMessage = document.getElementById('form-message');
+            formMessage.textContent = '';
+    
+            const data = {
+                name: document.getElementById('name').value,
+                description: document.getElementById('description').value,
+                price: parseFloat(document.getElementById('price').value),
+                category: document.getElementById('category').value || null
             };
-            listingsService.createListing(listingData)
-                .then(response => {
-                    $('#formStatus').html('<p>Listing created successfully!</p>');
-                    $('#createListingForm')[0].reset();
-                })
-                .catch(error => {
-                    console.error("Error creating listing:", error);
-                    $('#formStatus').html('<p>Error creating listing. Please try again.</p>');
-                });
+    
+            try {
+                const response = await ListingService.createListing(data);
+                if (response) {
+                    formMessage.textContent = 'Listing created successfully!';
+                    formMessage.style.color = 'green';
+                    form.reset();
+                    // Optionally redirect: window.location.href = '/listings';
+                } else {
+                    formMessage.textContent = 'Failed to create listing. Please try again.';
+                    formMessage.style.color = 'red';
+                }
+            } catch (error) {
+                console.error('Create listing error:', error);
+                formMessage.textContent = 'Error creating listing.';
+                formMessage.style.color = 'red';
+            }
         });
     }
 
