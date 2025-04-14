@@ -127,7 +127,8 @@ $(document).ready(function() {
                 name: document.getElementById('name').value,
                 description: document.getElementById('description').value,
                 price: parseFloat(document.getElementById('price').value),
-                category: document.getElementById('category').value || null
+                category: document.getElementById('category').value || null,
+                userId: CacheService.get("current_user")?.id
             };
     
             try {
