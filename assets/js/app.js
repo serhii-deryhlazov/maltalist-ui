@@ -100,20 +100,78 @@ $(document).ready(function() {
         };
     }
 
-    function loadListingsPageData() {
-        ListingService.getAllListings()
-            .then(listings => {
-                let listingsHtml = '<h1>All Listings</h1><ul>';
-                listings.forEach(listing => {
-                    listingsHtml += `<li>${listing.title}</li>`;
+    function loadListingsPageData(params = { page: 1, limit: 10 }) {
+        const listingsContainer = $('#listings');
+        const searchInput = $('<input type="text" id="search" placeholder="Search listings...">');
+        const searchButton = $('<button>Search</button>');
+        const listingsPage = $('#listings-page');
+    
+        // Add search UI
+        listingsPage.prepend(searchButton);
+        listingsPage.prepend(searchInput);
+    
+        function fetchListings() {
+            listingsContainer.html('<p>Loading...</p>');
+            ListingService.getAllListings(params)
+                .then(response => {
+                    const { listings, totalNumber, page } = response;
+                    let listingsHtml = '<ul>';
+                    listings.forEach(listing => {
+                        const picture = listing.picture1 || 'https://via.placeholder.com/100';
+                        listingsHtml += `
+                            <li>
+                                <img src="${picture}" alt="${listing.title}" style="max-width: 100px; max-height: 100px;">
+                                <div>
+                                    <h3>${listing.title}</h3>
+                                    <p>Price: $${listing.price.toFixed(2)}</p>
+                                    <p>Category: ${listing.category || 'None'}</p>
+                                </div>
+                            </li>
+                        `;
+                    });
+                    listingsHtml += '</ul>';
+    
+                    // Pagination
+                    const totalPages = Math.ceil(totalNumber / params.limit);
+                    let paginationHtml = '<div class="pagination">';
+                    if (page > 1) {
+                        paginationHtml += `<button class="page-btn" data-page="${page - 1}">Previous</button>`;
+                    }
+                    paginationHtml += `<span>Page ${page} of ${totalPages}</span>`;
+                    if (page < totalPages) {
+                        paginationHtml += `<button class="page-btn" data-page="${page + 1}">Next</button>`;
+                    }
+                    paginationHtml += '</div>';
+    
+                    listingsContainer.html(listingsHtml + paginationHtml);
+    
+                    // Pagination buttons
+                    $('.page-btn').on('click', function() {
+                        params.page = parseInt($(this).data('page'));
+                        fetchListings();
+                    });
+                })
+                .catch(error => {
+                    console.error("Error loading listings:", error);
+                    listingsContainer.html('<p>Error loading listings</p>');
                 });
-                listingsHtml += '</ul>';
-                $('#content').html(listingsHtml);
-            })
-            .catch(error => {
-                console.error("Error loading listings:", error);
-                $('#content').html('<h1>Error loading listings</h1>');
-            });
+        }
+    
+        // Initial fetch
+        fetchListings();
+    
+        // Search handler
+        searchButton.on('click', () => {
+            params.search = searchInput.val().trim();
+            params.page = 1; // Reset to first page
+            fetchListings();
+        });
+    
+        searchInput.on('keypress', (e) => {
+            if (e.key === 'Enter') {
+                searchButton.click();
+            }
+        });
     }
 
     function loadCreateListingPage() {
