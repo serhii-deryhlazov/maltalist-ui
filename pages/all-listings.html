@@ -5,19 +5,3 @@
     </div>
 </div>
   
-<script>
-    import { ListingsService } from './js/services/listingsService.js';
-
-    // Fetch all listings when the page loads
-    window.onload = async () => {
-        const listings = await ListingsService.getAllListings();
-        if (listings) {
-        document.getElementById('listings').innerHTML = listings
-            .map(listing => `<div><h2>${listing.name}</h2><p>${listing.description}</p></div>`)
-            .join('');
-        } else {
-        document.getElementById('listings').innerHTML = '<p>No listings available.</p>';
-        }
-    };
-</script>
-  

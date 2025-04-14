@@ -101,7 +101,7 @@ $(document).ready(function() {
     }
 
     function loadListingsPageData() {
-        listingsService.getAllListings()
+        ListingService.getAllListings()
             .then(listings => {
                 let listingsHtml = '<h1>All Listings</h1><ul>';
                 listings.forEach(listing => {
