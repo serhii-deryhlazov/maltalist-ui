@@ -116,36 +116,6 @@ $(document).ready(function() {
     }
 
     function loadCreateListingPage() {
-        const mainContent = document.getElementById('content');
-        if (!mainContent) {
-            console.error('Main content container not found');
-            return;
-        }
-    
-        mainContent.innerHTML = `
-            <h2>Create a New Listing</h2>
-            <form id="create-listing-form">
-                <div>
-                    <label for="name">Title:</label>
-                    <input type="text" id="name" name="name" required>
-                </div>
-                <div>
-                    <label for="description">Description:</label>
-                    <textarea id="description" name="description" required></textarea>
-                </div>
-                <div>
-                    <label for="price">Price ($):</label>
-                    <input type="number" id="price" name="price" step="0.01" min="0" required>
-                </div>
-                <div>
-                    <label for="category">Category:</label>
-                    <input type="text" id="category" name="category" placeholder="e.g., Electronics">
-                </div>
-                <button type="submit">Create Listing</button>
-            </form>
-            <div id="form-message"></div>
-        `;
-    
         const form = document.getElementById('create-listing-form');
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
