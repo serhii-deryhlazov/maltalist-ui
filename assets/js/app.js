@@ -101,7 +101,7 @@ $(document).ready(function() {
     }
 
     function loadListingsPageData(params = { page: 1, limit: 10 }) {
-        const listingsContainer = $('#listings');
+        const listingsContainer = $('#listing-list');
         const searchInput = $('<input type="text" id="search" placeholder="Search listings...">');
         const searchButton = $('<button>Search</button>');
         const listingsPage = $('#listings-page');
