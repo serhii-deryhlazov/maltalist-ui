@@ -176,17 +176,63 @@ $(document).ready(function() {
 
     function loadCreateListingPage() {
         const form = document.getElementById('create-listing-form');
+        const picturesInput = document.getElementById('pictures');
+        const previewDiv = document.getElementById('preview');
+    
+        picturesInput.addEventListener('change', async () => {
+            previewDiv.innerHTML = ''; // Clear previous previews
+            const files = picturesInput.files;
+    
+            if (files.length > 10) {
+                alert('You can upload a maximum of 10 images.');
+                picturesInput.value = ''; // Clear the input
+                return;
+            }
+    
+            for (const file of files) {
+                if (!file.type.startsWith('image/')) {
+                    alert('Only image files are allowed.');
+                    picturesInput.value = ''; // Clear the input
+                    previewDiv.innerHTML = '';
+                    return;
+                }
+    
+                const img = document.createElement('img');
+                img.src = URL.createObjectURL(file);
+                img.style.maxWidth = '100px';
+                img.style.maxHeight = '100px';
+                previewDiv.appendChild(img);
+            }
+        });
+    
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
             const formMessage = document.getElementById('form-message');
             formMessage.textContent = '';
     
+            const files = picturesInput.files;
+            const pictureData = {};
+    
+            try {
+                for (let i = 0; i < Math.min(files.length, 10); i++) {
+                    const file = files[i];
+                    const base64String = await resizeAndConvertToBase64(file, 800, 0.7); // Resize to max 800px, 70% quality
+                    pictureData[`Picture${i + 1}`] = base64String;
+                }
+            } catch (error) {
+                console.error('Image processing error:', error);
+                formMessage.textContent = 'Error processing images.';
+                formMessage.style.color = 'red';
+                return;
+            }
+    
             const data = {
-                name: document.getElementById('name').value,
-                description: document.getElementById('description').value,
-                price: parseFloat(document.getElementById('price').value),
-                category: document.getElementById('category').value || null,
-                userId: CacheService.get("current_user")?.id
+                Title: document.getElementById('name').value,
+                Description: document.getElementById('description').value,
+                Price: parseFloat(document.getElementById('price').value),
+                Category: document.getElementById('category').value || null,
+                UserId: CacheService.get('current_user')?.id,
+                ...pictureData // Spread the picture fields (Picture1, Picture2, etc.)
             };
     
             try {
@@ -195,7 +241,7 @@ $(document).ready(function() {
                     formMessage.textContent = 'Listing created successfully!';
                     formMessage.style.color = 'green';
                     form.reset();
-                    // Optionally redirect: window.location.href = '/listings';
+                    previewDiv.innerHTML = ''; // Clear image previews
                 } else {
                     formMessage.textContent = 'Failed to create listing. Please try again.';
                     formMessage.style.color = 'red';
@@ -207,8 +253,57 @@ $(document).ready(function() {
             }
         });
     }
+    
+    async function resizeAndConvertToBase64(file, maxSize, quality) {
+        return new Promise((resolve, reject) => {
+            const img = new Image();
+            const reader = new FileReader();
+    
+            reader.onload = (e) => {
+                img.src = e.target.result;
+    
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+    
+                    let width = img.width;
+                    let height = img.height;
+                    if (width > height) {
+                        if (width > maxSize) {
+                            height = Math.round((height * maxSize) / width);
+                            width = maxSize;
+                        }
+                    } else {
+                        if (height > maxSize) {
+                            width = Math.round((width * maxSize) / height);
+                            height = maxSize;
+                        }
+                    }
+    
+                    canvas.width = width;
+                    canvas.height = height;
+    
+                    ctx.drawImage(img, 0, 0, width, height);
+    
+                    const base64String = canvas.toDataURL('image/jpeg', quality);
+                    resolve(base64String);
+    
+                    URL.revokeObjectURL(img.src);
+                };
+    
+                img.onerror = () => {
+                    reject(new Error('Failed to load image'));
+                };
+            };
+    
+            reader.onerror = () => {
+                reject(new Error('Failed to read file'));
+            };
+    
+            reader.readAsDataURL(file);
+        });
+    }
 
-    // Check URL on page load
     const path = window.location.pathname;
     if (path.startsWith('/profile/')) {
         loadContent('My Profile');
@@ -220,7 +315,6 @@ $(document).ready(function() {
         loadContent('Home');
     }
 
-    // Bind click events to navigation links
     $('#home').click(function(e) {
         e.preventDefault();
         loadContent('Home');

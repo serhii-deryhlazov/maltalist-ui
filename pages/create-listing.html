@@ -16,6 +16,11 @@
         <label for="category">Category:</label>
         <input type="text" id="category" name="category" placeholder="e.g., Electronics">
     </div>
+    <div>
+        <label for="pictures">Pictures (up to 10):</label>
+        <input type="file" id="pictures" name="pictures" accept="image/*" multiple>
+        <div id="preview" style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px;"></div>
+    </div>
     <button type="submit">Create Listing</button>
 </form>
 <div id="form-message"></div>
