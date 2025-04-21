@@ -374,8 +374,7 @@ $(document).ready(function() {
             loadContent('My Profile');
             history.pushState({}, '', `/profile/${currentUser.id}`);
         } else {
-            const googleSignInDiv = `
-                <h1>No User Logged In</h1>
+            $('#content').html(`<h1>No User Logged In</h1>
                 <div id="g_id_onload"
                     data-client_id="763140433455-9tudkmcpnbec0dv4ndej56r1kho6hd3o.apps.googleusercontent.com"
                     data-callback="onGoogleSignIn"
@@ -389,12 +388,7 @@ $(document).ready(function() {
                     data-text="sign_in_with"
                     data-size="large"
                     data-logo_alignment="left">
-                </div>
-            `;
-            const contentDiv = document.getElementById('content');
-            if (!currentUser) {
-                contentDiv.insertAdjacentHTML('afterbegin', googleSignInDiv);
-            }
+                </div>`);
         }
     });
 });
