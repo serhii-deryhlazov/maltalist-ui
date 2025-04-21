@@ -18,8 +18,6 @@ $(document).ready(function() {
             
             if (page === 'Home') {
                 loadHomePageData();
-            } else if (page === 'All Listings') {
-                loadListingsPageData();
             } else if (page === 'Create Listing') {
                 loadCreateListingPage();
             } else if (page === 'My Profile') {
@@ -35,8 +33,25 @@ $(document).ready(function() {
         const currentUser = JSON.parse(localStorage.getItem('current_user'));
         const profile = await UserProfileService.getUserProfile(userId);
 
-        console.log("Current User:", currentUser);
-        console.log("Profile Details:", profile);
+        window.onGoogleSignIn = async function (response) {
+            try {
+                const credential = response.credential;
+                const user = await UserProfileService.verifyGoogleLogin(credential);
+                if (user && user.id) {
+                    CacheService.set("current_user", user);
+                    console.log("Logged in as:", user);
+                } else {
+                    alert("Login failed on server.");
+                }
+            } catch (err) {
+                console.error("Google login error:", err);
+                alert("Google login failed.");
+            }
+        };
+
+        if (!currentUser) {
+            contentDiv.insertAdjacentHTML('afterbegin', googleSignInDiv);
+        }
 
         if (profile) {
             let profileDetailsHTML = `
@@ -85,24 +100,6 @@ $(document).ready(function() {
     }
 
     function loadHomePageData() {
-        window.onGoogleSignIn = async function (response) {
-            try {
-                const credential = response.credential;
-                const user = await UserProfileService.verifyGoogleLogin(credential);
-                if (user && user.id) {
-                    CacheService.set("current_user", user);
-                    console.log("Logged in as:", user);
-                } else {
-                    alert("Login failed on server.");
-                }
-            } catch (err) {
-                console.error("Google login error:", err);
-                alert("Google login failed.");
-            }
-        };
-    }
-
-    function loadListingsPageData(params = { page: 1, limit: 10 }) {
         const listingsContainer = $('#listing-list');
         const searchInput = $('<input type="text" id="search" placeholder="Search listings...">');
         const searchButton = $('<button>Search</button>');
@@ -345,8 +342,6 @@ $(document).ready(function() {
     const path = window.location.pathname;
     if (path.startsWith('/profile/')) {
         loadContent('My Profile');
-    } else if (path === '/listings') {
-        loadContent('All Listings');
     } else if (path === '/create') {
         loadContent('Create Listing');
     } else if (path.startsWith('/listing/')) {
@@ -359,12 +354,6 @@ $(document).ready(function() {
         e.preventDefault();
         loadContent('Home');
         history.pushState({}, '', '/');
-    });
-
-    $('#listings').click(function(e) {
-        e.preventDefault();
-        loadContent('All Listings');
-        history.pushState({}, '', '/listings');
     });
 
     $('#create').click(function(e) {

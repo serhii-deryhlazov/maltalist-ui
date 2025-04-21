@@ -1,17 +1,13 @@
-<!-- Load Google's Identity Services library -->
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 
-<div id="g_id_onload"
-     data-client_id="763140433455-9tudkmcpnbec0dv4ndej56r1kho6hd3o.apps.googleusercontent.com"
-     data-callback="onGoogleSignIn"
-     data-auto_prompt="false">
-</div>
-
-<div class="g_id_signin"
-     data-type="standard"
-     data-shape="rectangular"
-     data-theme="outline"
-     data-text="sign_in_with"
-     data-size="large"
-     data-logo_alignment="left">
-</div>
+<style>
+     .pagination { margin-top: 20px; }
+     ul { list-style: none; padding: 0; }
+     li { display: flex; gap: 10px; margin-bottom: 10px; }
+ </style>
+ <div id="listings-page">
+     <h1>All Listings</h1>
+     <div id="listing-list">
+         <!-- Listings populated here -->
+     </div>
+ </div>
