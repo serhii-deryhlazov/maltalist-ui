@@ -1,7 +1,6 @@
 import { UserProfileService } from '/assets/js/services/userProfileService.js';
 import { CacheService } from '/assets/js/services/cacheService.js';
 import { ListingService } from '/assets/js/services/listingService.js';
-import { UserProfileService } from '/assets/js/services/userProfileService.js';
 
 $(document).ready(function() {
     function loadContent(page) {
