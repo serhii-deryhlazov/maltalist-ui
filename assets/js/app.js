@@ -193,11 +193,6 @@ $(document).ready(function() {
                 }
 
                 const author = await UserProfileService.getUserProfile(listing.userId);
-                if (author) {
-                    listing.userId = author.userName;
-                } else {
-                    listing.userId = 'Author not found';
-                }
                 
                 const listingHtml = `
                     <h2>${listing.title}</h2>
