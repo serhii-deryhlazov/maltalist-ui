@@ -96,7 +96,7 @@ $(document).ready(function() {
                 });
             }
 
-            const logOutBtn = document.getElementById('edit-profile-btn');
+            const logOutBtn = document.getElementById('logout-btn');
             if (logOutBtn) {
                 logOutBtn.addEventListener('click', () => {
                     CacheService.remove("current_user");
