@@ -49,27 +49,6 @@ $(document).ready(function() {
             }
         };
 
-        const googleSignInDiv = `
-            <div id="g_id_onload"
-                data-client_id="763140433455-9tudkmcpnbec0dv4ndej56r1kho6hd3o.apps.googleusercontent.com"
-                data-callback="onGoogleSignIn"
-                data-auto_prompt="false">
-            </div>
-        
-            <div class="g_id_signin"
-                data-type="standard"
-                data-shape="rectangular"
-                data-theme="outline"
-                data-text="sign_in_with"
-                data-size="large"
-                data-logo_alignment="left">
-            </div>
-        `;
-        const contentDiv = document.getElementById('content');
-        if (!currentUser) {
-            contentDiv.insertAdjacentHTML('afterbegin', googleSignInDiv);
-        }
-
         if (profile) {
             let profileDetailsHTML = `
                 <p>User: ${profile.userName}</p>
@@ -395,7 +374,27 @@ $(document).ready(function() {
             loadContent('My Profile');
             history.pushState({}, '', `/profile/${currentUser.id}`);
         } else {
-            $('#content').html('<h1>No User Logged In</h1>');
+            const googleSignInDiv = `
+                <h1>No User Logged In</h1>
+                <div id="g_id_onload"
+                    data-client_id="763140433455-9tudkmcpnbec0dv4ndej56r1kho6hd3o.apps.googleusercontent.com"
+                    data-callback="onGoogleSignIn"
+                    data-auto_prompt="false">
+                </div>
+            
+                <div class="g_id_signin"
+                    data-type="standard"
+                    data-shape="rectangular"
+                    data-theme="outline"
+                    data-text="sign_in_with"
+                    data-size="large"
+                    data-logo_alignment="left">
+                </div>
+            `;
+            const contentDiv = document.getElementById('content');
+            if (!currentUser) {
+                contentDiv.insertAdjacentHTML('afterbegin', googleSignInDiv);
+            }
         }
     });
 });
