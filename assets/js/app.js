@@ -383,7 +383,7 @@ $(document).ready(function() {
             const user = await UserProfileService.verifyGoogleLogin(credential);
             if (user && user.id) {
                 CacheService.set("current_user", user);
-                window.location.reload('/profile/' + user.id);
+                window.location.href = '/profile/' + user.id;
             } else {
                 alert("Login failed on server.");
             }
