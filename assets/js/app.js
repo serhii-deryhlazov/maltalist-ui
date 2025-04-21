@@ -33,22 +33,6 @@ $(document).ready(function() {
         const currentUser = JSON.parse(localStorage.getItem('current_user'));
         const profile = await UserProfileService.getUserProfile(userId);
 
-        window.onGoogleSignIn = async function (response) {
-            try {
-                const credential = response.credential;
-                const user = await UserProfileService.verifyGoogleLogin(credential);
-                if (user && user.id) {
-                    CacheService.set("current_user", user);
-                    console.log("Logged in as:", user);
-                } else {
-                    alert("Login failed on server.");
-                }
-            } catch (err) {
-                console.error("Google login error:", err);
-                alert("Google login failed.");
-            }
-        };
-
         if (profile) {
             let profileDetailsHTML = `
                 <p>User: ${profile.userName}</p>
@@ -392,4 +376,20 @@ $(document).ready(function() {
                 </div>`);
         }
     });
+
+    window.onGoogleSignIn = async function (response) {
+        try {
+            const credential = response.credential;
+            const user = await UserProfileService.verifyGoogleLogin(credential);
+            if (user && user.id) {
+                CacheService.set("current_user", user);
+                window.location.reload('/profile/' + user.id);
+            } else {
+                alert("Login failed on server.");
+            }
+        } catch (err) {
+            console.error("Google login error:", err);
+            alert("Google login failed.");
+        }
+    };
 });
