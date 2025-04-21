@@ -3,6 +3,7 @@ import { CacheService } from '/assets/js/services/cacheService.js';
 import { ListingService } from '/assets/js/services/listingService.js';
 
 $(document).ready(function() {
+    
     function loadContent(page) {
         const pageFile = page.toLowerCase().replace(' ', '-') + '.html';
         const pageUrl = `/pages/${pageFile}`;
@@ -351,9 +352,13 @@ $(document).ready(function() {
         history.pushState({}, '', '/create');
     });
 
+    const currentUser = CacheService.get("current_user");
+    if (currentUser && currentUser.id) {
+        $("#create").show();
+    }
+
     $('#profile').click(function(e) {
         e.preventDefault();
-        const currentUser = CacheService.get("current_user");
         if (currentUser && currentUser.id) {
             loadContent('My Profile');
             history.pushState({}, '', `/profile/${currentUser.id}`);
