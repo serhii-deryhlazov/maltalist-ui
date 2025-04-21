@@ -49,6 +49,7 @@ $(document).ready(function() {
             }
         };
 
+        const contentDiv = document.getElementById('content');
         if (!currentUser) {
             contentDiv.insertAdjacentHTML('afterbegin', googleSignInDiv);
         }
