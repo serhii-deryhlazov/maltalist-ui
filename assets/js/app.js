@@ -375,6 +375,7 @@ $(document).ready(function() {
             history.pushState({}, '', `/profile/${currentUser.id}`);
         } else {
             $('#content').html(`<h1>No User Logged In</h1>
+                <script src="https://accounts.google.com/gsi/client" async defer></script>
                 <div id="g_id_onload"
                     data-client_id="763140433455-9tudkmcpnbec0dv4ndej56r1kho6hd3o.apps.googleusercontent.com"
                     data-callback="onGoogleSignIn"
