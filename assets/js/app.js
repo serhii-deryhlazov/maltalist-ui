@@ -1,6 +1,7 @@
 import { UserProfileService } from '/assets/js/services/userProfileService.js';
 import { CacheService } from '/assets/js/services/cacheService.js';
 import { ListingService } from '/assets/js/services/listingService.js';
+import { UserProfileService } from '/assets/js/services/userProfileService.js';
 
 $(document).ready(function() {
     function loadContent(page) {
@@ -184,12 +185,19 @@ $(document).ready(function() {
             const listing = await ListingService.getListingById(listingId);
             if (listing) {
                 let picturesHtml = '';
-                // Collect all pictures (up to 10, assuming picture1, picture2, etc.)
+                
                 for (let i = 1; i <= 10; i++) {
                     const pictureKey = `picture${i}`;
                     if (listing[pictureKey]) {
                         picturesHtml += `<img src="${listing[pictureKey]}" alt="${listing.title} picture ${i}" style="max-width: 300px; max-height: 300px; margin: 10px;">`;
                     }
+                }
+
+                const author = await UserProfileService.getUserProfile(listing.userId);
+                if (author) {
+                    listing.userId = author.userName;
+                } else {
+                    listing.userId = 'Author not found';
                 }
                 
                 const listingHtml = `
@@ -197,7 +205,7 @@ $(document).ready(function() {
                     <p><strong>Price:</strong> $${listing.price.toFixed(2)}</p>
                     <p><strong>Description:</strong> ${listing.description || 'No description available'}</p>
                     <p><strong>Category:</strong> ${listing.category || 'None'}</p>
-                    <p><strong>Posted by:</strong> ${listing.userId}</p>
+                    <p><strong>Posted by:</strong> <a href="/profile/${listing.userId}">${author.userName}</a></p>
                     <div class="listing-pictures">${picturesHtml}</div>
                 `;
                 listingContainer.html(listingHtml);
