@@ -80,7 +80,7 @@ $(document).ready(function() {
             if (logOutBtn) {
                 logOutBtn.addEventListener('click', () => {
                     CacheService.remove("current_user");
-                    window.location.reload();
+                    window.location.href = '/';
                 });
             }
         } else {
