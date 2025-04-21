@@ -24,6 +24,8 @@ $(document).ready(function() {
                 loadCreateListingPage();
             } else if (page === 'My Profile') {
                 loadProfilePageData();
+            } else if (page === 'Listing Details') {
+                loadListingDetailsPage();
             }
         });
     }
@@ -122,7 +124,7 @@ $(document).ready(function() {
                             <li>
                                 <img src="${picture}" alt="${listing.title}" style="max-width: 100px; max-height: 100px;">
                                 <div>
-                                    <h3>${listing.title}</h3>
+                                    <h3><a href="/listing/${listing.id}">${listing.title}</a></h3>
                                     <p>Price: $${listing.price.toFixed(2)}</p>
                                     <p>Category: ${listing.category || 'None'}</p>
                                 </div>
@@ -172,6 +174,40 @@ $(document).ready(function() {
                 searchButton.click();
             }
         });
+    }
+
+    async function loadListingDetailsPage() {
+        const listingId = window.location.pathname.split('/')[2];
+        const listingContainer = $('#listing-details');
+        
+        try {
+            const listing = await ListingService.getListingById(listingId);
+            if (listing) {
+                let picturesHtml = '';
+                // Collect all pictures (up to 10, assuming picture1, picture2, etc.)
+                for (let i = 1; i <= 10; i++) {
+                    const pictureKey = `picture${i}`;
+                    if (listing[pictureKey]) {
+                        picturesHtml += `<img src="${listing[pictureKey]}" alt="${listing.title} picture ${i}" style="max-width: 300px; max-height: 300px; margin: 10px;">`;
+                    }
+                }
+                
+                const listingHtml = `
+                    <h2>${listing.title}</h2>
+                    <p><strong>Price:</strong> $${listing.price.toFixed(2)}</p>
+                    <p><strong>Description:</strong> ${listing.description || 'No description available'}</p>
+                    <p><strong>Category:</strong> ${listing.category || 'None'}</p>
+                    <p><strong>Posted by:</strong> ${listing.userId}</p>
+                    <div class="listing-pictures">${picturesHtml}</div>
+                `;
+                listingContainer.html(listingHtml);
+            } else {
+                listingContainer.html('<p>Listing not found.</p>');
+            }
+        } catch (error) {
+            console.error('Error loading listing details:', error);
+            listingContainer.html('<p>Error loading listing details.</p>');
+        }
     }
 
     function loadCreateListingPage() {
@@ -311,6 +347,8 @@ $(document).ready(function() {
         loadContent('All Listings');
     } else if (path === '/create') {
         loadContent('Create Listing');
+    } else if (path.startsWith('/listing/')) {
+        loadContent('Listing Details');
     } else {
         loadContent('Home');
     }
