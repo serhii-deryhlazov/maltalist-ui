@@ -61,6 +61,7 @@ $(document).ready(function() {
             if (currentUser && currentUser.id === profile.id) {
                 profileDetailsHTML += `
                     <button id="edit-profile-btn">Edit Profile</button>
+                    <button id="logout-btn">Log Out</button>
                 `;
             }
 
@@ -92,6 +93,14 @@ $(document).ready(function() {
             
                         window.location.reload();
                     });
+                });
+            }
+
+            const logOutBtn = document.getElementById('edit-profile-btn');
+            if (logOutBtn) {
+                logOutBtn.addEventListener('click', () => {
+                    CacheService.remove("current_user");
+                    window.location.reload();
                 });
             }
         } else {
