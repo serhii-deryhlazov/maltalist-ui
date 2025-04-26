@@ -1,28 +1,132 @@
-
 <style>
-     .pagination { margin-top: 20px; }
-     ul { list-style: none; padding: 0; }
-     li { display: flex; gap: 10px; margin-bottom: 10px; }
-     #filter-container {
-         margin-bottom: 20px;
-     }
- </style>
- <div id="listings-page">
+    .pagination { 
+        margin-top: 20px; 
+    }
+    ul { 
+        list-style: none; 
+        padding: 0; 
+    }
+    li { 
+        display: flex; 
+        gap: 10px; 
+        margin-bottom: 10px; 
+    }
+    #filter-container {
+        margin-bottom: 20px;
+        display: flex;
+        gap: 15px;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+    .filter-option {
+        cursor: pointer;
+        padding: 5px 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        transition: background-color 0.2s, border-color 0.2s;
+    }
+    .filter-option.selected {
+        background-color: #0078D7;
+        color: white;
+        border-color: #0078D7;
+    }
+    .filter-icon {
+        width: 24px;
+        height: 24px;
+        margin-bottom: 5px;
+    }
+</style>
+
+<div id="listings-page">
     <div id="filter-container">
-        <label for="category-filter">Category Filter:</label>
-        <select id="category-filter" name="category-filter">
-             <option value="">All Categories</option>
-             <option value="Electronics">Electronics</option>
-             <option value="Furniture">Furniture</option>
-             <option value="Clothing">Clothing</option>
-             <option value="Vehicles">Vehicles</option>
-             <option value="Real Estate">Real Estate</option>
-             <option value="Sports">Sports</option>
-             <option value="Books">Books</option>
-             <option value="Other">Other</option>
-        </select>
+        <div class="filter-option" data-category="">
+            <!-- All Categories icon -->
+            <svg class="filter-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="10" fill="#ccc"></circle>
+            </svg>
+            <span>All</span>
+        </div>
+        <div class="filter-option" data-category="Electronics">
+            <!-- Electronics icon -->
+            <svg class="filter-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                <rect x="4" y="4" width="16" height="16" fill="#ccc"></rect>
+            </svg>
+            <span>Electronics</span>
+        </div>
+        <div class="filter-option" data-category="Furniture">
+            <!-- Furniture icon -->
+            <svg class="filter-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                <path d="M4 10h16v2H4z" fill="#ccc"/>
+            </svg>
+            <span>Furniture</span>
+        </div>
+        <div class="filter-option" data-category="Clothing">
+            <!-- Clothing icon -->
+            <svg class="filter-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                <path d="M12 2l4 8h-8l4-8z" fill="#ccc"/>
+            </svg>
+            <span>Clothing</span>
+        </div>
+        <div class="filter-option" data-category="Vehicles">
+            <!-- Vehicles icon -->
+            <svg class="filter-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                <rect x="3" y="10" width="18" height="6" fill="#ccc"/>
+            </svg>
+            <span>Vehicles</span>
+        </div>
+        <div class="filter-option" data-category="Real Estate">
+            <!-- Real Estate icon -->
+            <svg class="filter-icon" xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 24 24">
+                <polygon points="12,2 22,10 22,22 2,22 2,10" fill="#ccc"/>
+            </svg>
+            <span>Real Estate</span>
+        </div>
+        <div class="filter-option" data-category="Sports">
+            <!-- Sports icon -->
+            <svg class="filter-icon" xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="8" fill="#ccc"/>
+            </svg>
+            <span>Sports</span>
+        </div>
+        <div class="filter-option" data-category="Books">
+            <!-- Books icon -->
+            <svg class="filter-icon" xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 24 24">
+                <rect x="6" y="4" width="12" height="16" fill="#ccc"/>
+            </svg>
+            <span>Books</span>
+        </div>
+        <div class="filter-option" data-category="Other">
+            <!-- Other icon -->
+            <svg class="filter-icon" xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 24 24">
+                <path d="M12 4v16" stroke="#ccc" stroke-width="2"/>
+                <path d="M4 12h16" stroke="#ccc" stroke-width="2"/>
+            </svg>
+            <span>Other</span>
+        </div>
     </div>
-     <div id="listing-list">
+    <div id="listing-list">
          <!-- Listings populated here -->
-     </div>
- </div>
+    </div>
+</div>
+
+<script>
+    // Add event listener for filter options
+    const filterOptions = document.querySelectorAll('.filter-option');
+    filterOptions.forEach(option => {
+        option.addEventListener('click', () => {
+            // Remove "selected" from all options then add to the clicked one
+            filterOptions.forEach(opt => opt.classList.remove('selected'));
+            option.classList.add('selected');
+            const selectedCategory = option.getAttribute('data-category');
+            console.log('Selected category:', selectedCategory);
+            // Trigger fetching listings based on selectedCategory.
+            // Example: update params and call fetchListings() if defined globally.
+            // params.category = selectedCategory;
+            // params.page = 1;
+            // fetchListings();
+        });
+    });
+</script>
