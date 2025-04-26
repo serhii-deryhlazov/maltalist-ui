@@ -161,12 +161,19 @@ $(document).ready(function() {
                 searchButton.click();
             }
         });
-    
-        // Category filter handler
-        $('#category-filter').on('change', function() {
-            params.category = $(this).val();
-            params.page = 1;
-            fetchListings();
+
+        const filterOptions = document.querySelectorAll('.filter-option');
+        filterOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                // Remove "selected" from all options then add to the clicked one
+                filterOptions.forEach(opt => opt.classList.remove('selected'));
+                option.classList.add('selected');
+                const selectedCategory = option.getAttribute('data-category');
+                
+                params.category = selectedCategory === 'all' ? null : selectedCategory;
+                params.page = 1;
+                fetchListings();
+            });
         });
     }
 

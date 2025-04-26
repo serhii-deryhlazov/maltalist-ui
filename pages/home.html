@@ -111,22 +111,3 @@
          <!-- Listings populated here -->
     </div>
 </div>
-
-<script>
-    // Add event listener for filter options
-    const filterOptions = document.querySelectorAll('.filter-option');
-    filterOptions.forEach(option => {
-        option.addEventListener('click', () => {
-            // Remove "selected" from all options then add to the clicked one
-            filterOptions.forEach(opt => opt.classList.remove('selected'));
-            option.classList.add('selected');
-            const selectedCategory = option.getAttribute('data-category');
-            console.log('Selected category:', selectedCategory);
-            // Trigger fetching listings based on selectedCategory.
-            // Example: update params and call fetchListings() if defined globally.
-            // params.category = selectedCategory;
-            // params.page = 1;
-            // fetchListings();
-        });
-    });
-</script>
