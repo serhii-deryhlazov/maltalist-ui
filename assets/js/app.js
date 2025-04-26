@@ -112,7 +112,7 @@ $(document).ready(function() {
                                 <img src="${picture}" alt="${listing.title}" style="max-width: 100px; max-height: 100px;">
                                 <div>
                                     <h3><a href="/listing/${listing.id}">${listing.title}</a></h3>
-                                    <p>Price: $${listing.price.toFixed(2)}</p>
+                                    <p>Price: ${listing.price.toFixed(2)} EUR</p>
                                     <p>Category: ${listing.category || 'None'}</p>
                                 </div>
                             </li>
@@ -161,6 +161,13 @@ $(document).ready(function() {
                 searchButton.click();
             }
         });
+    
+        // Category filter handler
+        $('#category-filter').on('change', function() {
+            params.category = $(this).val();
+            params.page = 1;
+            fetchListings();
+        });
     }
 
     async function loadListingDetailsPage() {
@@ -183,7 +190,7 @@ $(document).ready(function() {
                 
                 const listingHtml = `
                     <h2>${listing.title}</h2>
-                    <p><strong>Price:</strong> $${listing.price.toFixed(2)}</p>
+                    <p><strong>Price:</strong> ${listing.price.toFixed(2)} EUR</p>
                     <p><strong>Description:</strong> ${listing.description || 'No description available'}</p>
                     <p><strong>Category:</strong> ${listing.category || 'None'}</p>
                     <p><strong>Posted by:</strong> <a href="/profile/${listing.userId}">${author.userName}</a></p>
