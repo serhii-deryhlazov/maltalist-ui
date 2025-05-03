@@ -185,17 +185,15 @@ $(document).ready(function() {
             const listing = await ListingService.getListingById(listingId);
             if (listing) {
                 let picturesHtml = '';
-                
                 for (let i = 1; i <= 10; i++) {
                     const pictureKey = `picture${i}`;
                     if (listing[pictureKey]) {
                         picturesHtml += `<img src="${listing[pictureKey]}" alt="${listing.title} picture ${i}" style="max-width: 300px; max-height: 300px; margin: 10px;">`;
                     }
                 }
-
-                const author = await UserProfileService.getUserProfile(listing.userId);
                 
-                const listingHtml = `
+                const author = await UserProfileService.getUserProfile(listing.userId);
+                let listingHtml = `
                     <h2>${listing.title}</h2>
                     <p><strong>Price:</strong> ${listing.price.toFixed(2)} EUR</p>
                     <p><strong>Description:</strong> ${listing.description || 'No description available'}</p>
@@ -203,7 +201,148 @@ $(document).ready(function() {
                     <p><strong>Posted by:</strong> <a href="/profile/${listing.userId}">${author.userName}</a></p>
                     <div class="listing-pictures">${picturesHtml}</div>
                 `;
+                
+                const currentUser = CacheService.get("current_user");
+                if (currentUser && currentUser.id === listing.userId) {
+                    listingHtml += `<button id="edit-listing-btn">Edit Listing</button>`;
+                }
+                
                 listingContainer.html(listingHtml);
+                
+                // Edit Listing handler
+                const editBtn = document.getElementById("edit-listing-btn");
+                if (editBtn) {
+                    editBtn.addEventListener("click", () => {
+                        // Build edit form with current data as placeholder and image previews
+                        let editFormHtml = `
+                            <h3>Edit Listing</h3>
+                            <form id="edit-listing-form">
+                                <div>
+                                    <label for="edit-name">Title:</label>
+                                    <input type="text" id="edit-name" name="name" value="${listing.title}" required>
+                                </div>
+                                <div>
+                                    <label for="edit-description">Description:</label>
+                                    <textarea id="edit-description" name="description" required>${listing.description}</textarea>
+                                </div>
+                                <div>
+                                    <label for="edit-price">Price (EUR):</label>
+                                    <input type="number" id="edit-price" name="price" step="0.01" min="0" value="${listing.price}" required>
+                                </div>
+                                <div>
+                                    <label for="edit-category">Category:</label>
+                                    <select id="edit-category" name="category" required>
+                                        <option value="">Select a category</option>
+                                        <option value="Electronics" ${listing.category==='Electronics' ? 'selected' : ''}>Electronics</option>
+                                        <option value="Furniture" ${listing.category==='Furniture' ? 'selected' : ''}>Furniture</option>
+                                        <option value="Clothing" ${listing.category==='Clothing' ? 'selected' : ''}>Clothing</option>
+                                        <option value="Vehicles" ${listing.category==='Vehicles' ? 'selected' : ''}>Vehicles</option>
+                                        <option value="Real Estate" ${listing.category==='Real Estate' ? 'selected' : ''}>Real Estate</option>
+                                        <option value="Sports" ${listing.category==='Sports' ? 'selected' : ''}>Sports</option>
+                                        <option value="Books" ${listing.category==='Books' ? 'selected' : ''}>Books</option>
+                                        <option value="Other" ${listing.category==='Other' ? 'selected' : ''}>Other</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label for="edit-pictures">Pictures (up to 10):</label>
+                                    <input type="file" id="edit-pictures" name="pictures" accept="image/*" multiple>
+                                    <div id="edit-preview" style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px;">`;
+                        
+                        // Prepopulate existing images
+                        for (let i = 1; i <= 10; i++) {
+                            const picKey = `picture${i}`;
+                            if (listing[picKey]) {
+                                editFormHtml += `<img src="${listing[picKey]}" alt="Picture ${i}" style="max-width: 100px; max-height: 100px;">`;
+                            }
+                        }
+                        
+                        editFormHtml += `       </div>
+                                </div>
+                                <button type="submit">Save Changes</button>
+                            </form>
+                            <div id="edit-form-message"></div>
+                        `;
+                        listingContainer.html(editFormHtml);
+        
+                        const editPicturesInput = document.getElementById('edit-pictures');
+                        const editPreviewDiv = document.getElementById('edit-preview');
+        
+                        // Handle new picture previews
+                        editPicturesInput.addEventListener('change', async () => {
+                            editPreviewDiv.innerHTML = ''; // Clear previews
+                            const files = editPicturesInput.files;
+                
+                            if (files.length > 10) {
+                                alert('You can upload a maximum of 10 images.');
+                                editPicturesInput.value = '';
+                                return;
+                            }
+                
+                            for (const file of files) {
+                                if (!file.type.startsWith('image/')) {
+                                    alert('Only image files are allowed.');
+                                    editPicturesInput.value = '';
+                                    editPreviewDiv.innerHTML = '';
+                                    return;
+                                }
+                                const img = document.createElement('img');
+                                img.src = URL.createObjectURL(file);
+                                img.style.maxWidth = '100px';
+                                img.style.maxHeight = '100px';
+                                editPreviewDiv.appendChild(img);
+                            }
+                        });
+        
+                        // Edit form submission
+                        document.getElementById('edit-listing-form').addEventListener('submit', async (e) => {
+                            e.preventDefault();
+                            const editFormMessage = document.getElementById('edit-form-message');
+                            editFormMessage.textContent = '';
+        
+                            const editFiles = editPicturesInput.files;
+                            const pictureData = {};
+        
+                            try {
+                                for (let i = 0; i < Math.min(editFiles.length, 10); i++) {
+                                    const file = editFiles[i];
+                                    const base64String = await resizeAndConvertToBase64(file, 800, 0.7);
+                                    pictureData[`Picture${i + 1}`] = base64String;
+                                }
+                            } catch (error) {
+                                console.error('Image processing error:', error);
+                                editFormMessage.textContent = 'Error processing images.';
+                                editFormMessage.style.color = 'red';
+                                return;
+                            }
+        
+                            const data = {
+                                Title: document.getElementById('edit-name').value,
+                                Description: document.getElementById('edit-description').value,
+                                Price: parseFloat(document.getElementById('edit-price').value),
+                                Category: document.getElementById('edit-category').value || null,
+                                UserId: currentUser.id,
+                                ...pictureData
+                            };
+        
+                            try {
+                                const response = await ListingService.updateListing(listing.id, data);
+                                if (response) {
+                                    editFormMessage.textContent = 'Listing updated successfully!';
+                                    editFormMessage.style.color = 'green';
+                                    // Reload updated listing details
+                                    loadListingDetailsPage();
+                                } else {
+                                    editFormMessage.textContent = 'Failed to update listing. Please try again.';
+                                    editFormMessage.style.color = 'red';
+                                }
+                            } catch (error) {
+                                console.error('Update listing error:', error);
+                                editFormMessage.textContent = 'Error updating listing.';
+                                editFormMessage.style.color = 'red';
+                            }
+                        });
+                    });
+                }
             } else {
                 listingContainer.html('<p>Listing not found.</p>');
             }
