@@ -298,15 +298,26 @@ $(document).ready(function() {
                             e.preventDefault();
                             const editFormMessage = document.getElementById('edit-form-message');
                             editFormMessage.textContent = '';
-        
+
                             const editFiles = editPicturesInput.files;
                             const pictureData = {};
-        
+
+                            // Process new image uploads if provided
                             try {
-                                for (let i = 0; i < Math.min(editFiles.length, 10); i++) {
-                                    const file = editFiles[i];
-                                    const base64String = await resizeAndConvertToBase64(file, 800, 0.7);
-                                    pictureData[`Picture${i + 1}`] = base64String;
+                                if (editFiles.length > 0) {
+                                    for (let i = 0; i < Math.min(editFiles.length, 10); i++) {
+                                        const file = editFiles[i];
+                                        const base64String = await resizeAndConvertToBase64(file, 800, 0.7);
+                                        pictureData[`Picture${i + 1}`] = base64String;
+                                    }
+                                } else {
+                                    // No new images were uploaded, so use existing listing pictures.
+                                    for (let i = 1; i <= 10; i++) {
+                                        // Assuming your listing object contains keys 'picture1', 'picture2', etc.
+                                        if (listing[`picture${i}`]) {
+                                            pictureData[`Picture${i}`] = listing[`picture${i}`];
+                                        }
+                                    }
                                 }
                             } catch (error) {
                                 console.error('Image processing error:', error);
@@ -314,7 +325,7 @@ $(document).ready(function() {
                                 editFormMessage.style.color = 'red';
                                 return;
                             }
-        
+
                             const data = {
                                 Title: document.getElementById('edit-name').value,
                                 Description: document.getElementById('edit-description').value,
@@ -323,7 +334,7 @@ $(document).ready(function() {
                                 UserId: currentUser.id,
                                 ...pictureData
                             };
-        
+
                             try {
                                 const response = await ListingService.updateListing(listing.id, data);
                                 if (response) {
