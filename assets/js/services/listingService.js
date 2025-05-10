@@ -15,25 +15,11 @@ class ListingService {
   }
 
   static async updateListing(id, data) {
-    return await fetch(`/api/Listings/${id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data)
-    }).then(res => res.ok ? res.json() : null)
-      .catch(err => {
-        console.error('PUT request failed:', err);
-        return null;
-      });
-  }
+    return await HttpService.put(`/api/Listings/${id}`, data);
+}
 
   static async deleteListing(id) {
-    return await fetch(`/api/Listings/${id}`, {
-      method: 'DELETE'
-    }).then(res => res.ok)
-      .catch(err => {
-        console.error('DELETE request failed:', err);
-        return false;
-      });
+    return await HttpService.delete(`/api/Listings/${id}`);
   }
 
   static async getCategories() {

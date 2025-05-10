@@ -59,6 +59,22 @@ class HttpService {
         return { error: Config.ERROR_MESSAGES.NETWORK_ERROR };
       }
     }
+
+    static async delete(endpoint) {
+      try {
+        const url = `${Config.API_BASE_URL}${endpoint}`;
+        const response = await fetch(url, {
+          method: 'DELETE',
+        });
+        if (!response.ok) {
+          throw new Error(`DELETE request failed with status ${response.status}`);
+        }
+        return true;
+      } catch (error) {
+        console.error('DELETE request failed:', error);
+        return false;
+      }
+    }
     
   }
   

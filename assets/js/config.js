@@ -1,7 +1,7 @@
 // assets/js/config.js
 
 // Base URL for API requests
-const API_BASE_URL = 'https://api.maltalist.webnester.com';  // Replace with your actual API URL
+const API_BASE_URL = 'https://api.maltalist.webnester.com';
 
 // Configuration for page size, number of listings per page, etc.
 const PAGE_SIZE = 10;
