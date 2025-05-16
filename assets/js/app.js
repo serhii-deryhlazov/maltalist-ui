@@ -571,6 +571,7 @@ $(document).ready(function() {
         history.pushState({}, '', '/');
     });
 
+    const currentUser = CacheService.get("current_user");
     $('#profile').click(function(e) {
         e.preventDefault();
         if (currentUser && currentUser.id) {
