@@ -6,6 +6,37 @@
         margin-right: 10px;
         margin-bottom: 10px;
     }
+    .carousel-container {
+        display: flex;
+        gap: 30px;
+        align-items: flex-start;
+        margin-bottom: 20px;
+    }
+    .carousel-main img {
+        width: 350px;
+        height: 350px;
+        object-fit: contain;
+        border-radius: 8px;
+        border: 1px solid #ddd;
+        background: #fafafa;
+    }
+    .carousel-thumbnails {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+    .carousel-thumb {
+        width: 70px;
+        height: 70px;
+        object-fit: cover;
+        border-radius: 5px;
+        border: 2px solid transparent;
+        cursor: pointer;
+        transition: border 0.2s;
+    }
+    .carousel-thumb.selected {
+        border: 2px solid #0078D7;
+    }
 </style>
 <div id="listing-details">
     <p>Loading listing details...</p>

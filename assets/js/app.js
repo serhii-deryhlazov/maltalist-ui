@@ -184,23 +184,46 @@ $(document).ready(function() {
         try {
             const listing = await ListingService.getListingById(listingId);
             if (listing) {
-                let picturesHtml = '';
+                let pictures = [];
                 for (let i = 1; i <= 10; i++) {
                     const pictureKey = `picture${i}`;
                     if (listing[pictureKey]) {
-                        picturesHtml += `<img src="${listing[pictureKey]}" alt="${listing.title} picture ${i}" style="max-width: 300px; max-height: 300px; margin: 10px;">`;
+                        pictures.push(listing[pictureKey]);
                     }
+                }
+
+                let carouselHtml = '';
+                if (pictures.length > 0) {
+                    carouselHtml = `
+                        <div class="carousel-container">
+                            <div class="carousel-main">
+                                <img id="carousel-big-img" src="${pictures[0]}" alt="Main Image" />
+                            </div>
+                            <div class="carousel-thumbnails">
+                                ${pictures.map((src, idx) => `
+                                    <img class="carousel-thumb${idx === 0 ? ' selected' : ''}" src="${src}" data-idx="${idx}" alt="Thumbnail ${idx + 1}" />
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
                 }
                 
                 const author = await UserProfileService.getUserProfile(listing.userId);
                 let listingHtml = `
+                    ${carouselHtml}
                     <h2>${listing.title}</h2>
                     <p><strong>Price:</strong> ${listing.price.toFixed(2)} EUR</p>
                     <p><strong>Description:</strong> ${listing.description || 'No description available'}</p>
                     <p><strong>Category:</strong> ${listing.category || 'None'}</p>
                     <p><strong>Posted by:</strong> <a href="/profile/${listing.userId}">${author.userName}</a></p>
-                    <div class="listing-pictures">${picturesHtml}</div>
                 `;
+
+                $('.carousel-thumb').on('click', function() {
+                    const idx = $(this).data('idx');
+                    $('#carousel-big-img').attr('src', pictures[idx]);
+                    $('.carousel-thumb').removeClass('selected');
+                    $(this).addClass('selected');
+                });
                 
                 const currentUser = CacheService.get("current_user");
                 if (currentUser && currentUser.id === listing.userId) {
