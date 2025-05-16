@@ -37,7 +37,7 @@ $(document).ready(function() {
         if (profile) {
             let profileDetailsHTML = '<div id="profile-info">';
             profileDetailsHTML += `
-                <img src="${profile.userPicture || 'https://via.placeholder.com/100'}" alt="Profile Picture" style="max-width: 100px; max-height: 100px;">
+                <img src="${profile.userPicture || 'https://via.placeholder.com/100'}" alt="Profile Picture" style="width: 100%;">
                 <h2>${profile.userName || 'No Name Provided'}</h2>
             `;
 
@@ -49,6 +49,7 @@ $(document).ready(function() {
                 profileDetailsHTML += `
                     <button id="edit-profile-btn">Edit Profile</button>
                     <button id="logout-btn">Log Out</button>
+                    <button id="create">Create Listing</button>
                 `;
             }
 
