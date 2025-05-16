@@ -129,13 +129,6 @@ $(document).ready(function() {
 
     function loadHomePageData(params = { page: 1, limit: 10 }) {
         const listingsContainer = $('#listing-list');
-        const searchInput = $('<input type="text" id="search" placeholder="Search listings...">');
-        const searchButton = $('<button>Search</button>');
-        const listingsPage = $('#listings-page');
-    
-        // Add search UI
-        listingsPage.prepend(searchButton);
-        listingsPage.prepend(searchInput);
     
         function fetchListings() {
             listingsContainer.html('<p>Loading...</p>');
@@ -187,15 +180,15 @@ $(document).ready(function() {
         fetchListings();
     
         // Search handler
-        searchButton.on('click', () => {
+        $("#search-button").on('click', () => {
             params.search = searchInput.val().trim();
             params.page = 1; // Reset to first page
             fetchListings();
         });
     
-        searchInput.on('keypress', (e) => {
+        $("#search-input").on('keypress', (e) => {
             if (e.key === 'Enter') {
-                searchButton.click();
+                $("#search-button").click();
             }
         });
 
