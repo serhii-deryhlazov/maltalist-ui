@@ -551,6 +551,9 @@ $(document).ready(function() {
                     Array.from(pictureInputsDiv.querySelectorAll('img')).forEach(img => img.style.display = 'none');
                     Array.from(pictureInputsDiv.querySelectorAll('button')).forEach(btn => btn.style.display = 'none');
                     pictureFiles.fill(null);
+                    if (response.id) {
+                        window.location.href = `/listing/${response.id}`;
+                    }
                 } else {
                     formMessage.textContent = 'Failed to create listing. Please try again.';
                     formMessage.style.color = 'red';
