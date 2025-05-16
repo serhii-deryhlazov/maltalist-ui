@@ -131,7 +131,7 @@ $(document).ready(function() {
         const listingsContainer = $('#listing-list');
         const searchInput = $('<input type="text" id="search" placeholder="Search listings...">');
         const searchButton = $('<button>Search</button>');
-        const tools = $('#tools');
+        const tools = $('#search-bar');
     
         // Add search UI
         tools.prepend(searchButton);

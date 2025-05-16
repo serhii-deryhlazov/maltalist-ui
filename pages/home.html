@@ -140,6 +140,13 @@
         color: #555;
     }
 
+    #tools {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
     @media (max-width: 900px) {
     #listing-list ul {
         grid-template-columns: repeat(1, 1fr);
@@ -149,6 +156,8 @@
 
 <div id="listings-page">
     <div id="tools">
+        <div id="search-bar">
+        </div>
         <div id="filter-container">
             <div class="filter-option" data-category="">
                 <span class="material-symbols-outlined">apps</span>
