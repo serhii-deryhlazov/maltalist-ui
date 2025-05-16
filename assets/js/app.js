@@ -36,14 +36,40 @@ $(document).ready(function() {
 
         if (profile) {
             let profileDetailsHTML = `
-                <p>User: ${profile.userName}</p>
+                <img src="${profile.picture || 'https://via.placeholder.com/100'}" alt="Profile Picture" style="max-width: 100px; max-height: 100px;">
+                <h2>${profile.userName || 'No Name Provided'}</h2>
             `;
+
+            if (profile.phoneNumber) {
+                profileDetailsHTML += `<p><strong>Phone Number:</strong> ${profile.phoneNumber}</p>`;
+            }
 
             if (currentUser && currentUser.id === profile.id) {
                 profileDetailsHTML += `
                     <button id="edit-profile-btn">Edit Profile</button>
                     <button id="logout-btn">Log Out</button>
                 `;
+
+                const myListings = await ListingService.getUserListings(currentUser.id);
+                if (myListings && myListings.length > 0) {
+                    profileDetailsHTML += `<h3>My Listings</h3><ul id="my-listings">`;
+                    myListings.forEach(listing => {
+                        const picture = listing.picture1 || 'https://via.placeholder.com/80';
+                        profileDetailsHTML += `
+                            <li style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                                <img src="${picture}" alt="${listing.title}" style="max-width: 80px; max-height: 80px;">
+                                <div>
+                                    <a href="/listing/${listing.id}"><strong>${listing.title}</strong></a>
+                                    <div>€${listing.price.toFixed(2)}</div>
+                                    <div>${listing.category || ''}</div>
+                                </div>
+                            </li>
+                        `;
+                    });
+                    profileDetailsHTML += `</ul>`;
+                } else {
+                    profileDetailsHTML += `<h3>My Listings</h3><p>No listings found.</p>`;
+                }
             }
 
             document.getElementById('profile-details').innerHTML = profileDetailsHTML;
