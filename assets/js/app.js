@@ -65,7 +65,7 @@ $(document).ready(function() {
                             <img src="${picture}" alt="${listing.title}" style="max-width: 80px; max-height: 80px;">
                             <div>
                                 <a href="/listing/${listing.id}"><strong>${listing.title}</strong></a>
-                                <div>€${listing.price.toFixed(2)}</div>
+                                <div>${listing.price.toFixed(2)}€</div>
                                 <div>${listing.category || ''}</div>
                             </div>
                         </li>
