@@ -198,11 +198,11 @@ $(document).ready(function() {
                         <div class="carousel-container">
                             <div class="carousel-main">
                                 <img id="carousel-big-img" src="${pictures[0]}" alt="Main Image" />
-                            </div>
-                            <div class="carousel-thumbnails">
-                                ${pictures.map((src, idx) => `
-                                    <img class="carousel-thumb${idx === 0 ? ' selected' : ''}" src="${src}" data-idx="${idx}" alt="Thumbnail ${idx + 1}" />
-                                `).join('')}
+                                <div class="carousel-thumbnails">
+                                    ${pictures.map((src, idx) => `
+                                        <img class="carousel-thumb${idx === 0 ? ' selected' : ''}" src="${src}" data-idx="${idx}" alt="Thumbnail ${idx + 1}" />
+                                    `).join('')}
+                                </div>
                             </div>
                         </div>
                     `;

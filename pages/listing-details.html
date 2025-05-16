@@ -8,11 +8,16 @@
     }
     .carousel-container {
         display: flex;
-        gap: 30px;
+        flex-direction: column;
         align-items: flex-start;
         margin-bottom: 20px;
     }
-    .carousel-main img {
+    .carousel-main {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .carousel-main img#carousel-big-img {
         width: 350px;
         height: 350px;
         object-fit: contain;
@@ -22,8 +27,11 @@
     }
     .carousel-thumbnails {
         display: flex;
-        flex-direction: column;
+        flex-direction: row;
         gap: 10px;
+        margin-top: 15px;
+        justify-content: center;
+        width: 100%;
     }
     .carousel-thumb {
         width: 70px;
