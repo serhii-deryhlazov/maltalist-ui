@@ -150,8 +150,7 @@ $(document).ready(function() {
                                 <img src="${picture}" alt="${listing.title}" style="max-width: 100px; max-height: 100px;">
                                 <div>
                                     <h3><a href="/listing/${listing.id}">${listing.title}</a></h3>
-                                    <p>Price: ${listing.price.toFixed(2)} EUR</p>
-                                    <p>Category: ${listing.category || 'None'}</p>
+                                    <p>${listing.price.toFixed(2)} EUR</p>
                                 </div>
                             </li>
                         `;

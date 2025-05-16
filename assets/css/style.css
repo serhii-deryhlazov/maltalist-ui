@@ -1,32 +1,113 @@
+/* General Reset & Base */
 body {
-    font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: #f4f6fa;
+    color: #222;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
+/* Navbar */
 .navbar {
-    background-color: #333;
-    padding: 10px;
-    text-align: center;
+    background: #0078d7;
+    padding: 0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
 }
-
+.navbar nav {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 32px;
+    padding: 0 16px;
+    height: 60px;
+}
 .navbar a {
-    color: white;
-    margin: 0 15px;
+    color: #fff;
     text-decoration: none;
+    font-size: 1.1rem;
+    font-weight: 500;
+    padding: 8px 14px;
+    border-radius: 5px;
+    transition: background 0.18s, color 0.18s;
+}
+.navbar a:hover, .navbar a.active {
+    background: #005fa3;
+    color: #fff;
 }
 
-.navbar a:hover {
-    text-decoration: underline;
-}
-
+/* Main Content */
 #content {
-    margin: 20px;
+    flex: 1 0 auto;
+    max-width: 1000px;
+    margin: 32px auto 0 auto;
+    padding: 24px 24px 40px 24px;
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 4px 32px rgba(0,0,0,0.07);
+    min-height: 400px;
 }
 
+/* Footer */
 .footer {
+    background: #222;
+    color: #fff;
     text-align: center;
-    padding: 20px;
-    background-color: #333;
-    color: white;
+    padding: 18px 10px 12px 10px;
+    font-size: 0.98rem;
+    letter-spacing: 0.02em;
+    flex-shrink: 0;
+    margin-top: 40px;
+    border-radius: 0 0 12px 12px;
+}
+.footer p {
+    margin: 0;
+    line-height: 1.6;
+}
+
+/* Responsive Design */
+@media (max-width: 700px) {
+    .navbar nav {
+        gap: 12px;
+        height: 48px;
+        font-size: 1rem;
+    }
+    #content {
+        max-width: 98vw;
+        padding: 12px 4vw 24px 4vw;
+        border-radius: 10px;
+        margin-top: 16px;
+        min-height: 250px;
+    }
+    .footer {
+        font-size: 0.92rem;
+        padding: 12px 4px 8px 4px;
+        border-radius: 0 0 8px 8px;
+    }
+}
+
+@media (max-width: 430px) {
+    .navbar nav {
+        flex-direction: column;
+        gap: 0;
+        height: auto;
+        padding: 8px 0;
+    }
+    .navbar a {
+        display: block;
+        margin: 4px 0;
+        width: 100%;
+        text-align: center;
+    }
+    #content {
+        padding: 8px 2vw 16px 2vw;
+        border-radius: 6px;
+        margin-top: 8px;
+    }
+    .footer {
+        font-size: 0.88rem;
+        border-radius: 0 0 4px 4px;
+    }
 }
