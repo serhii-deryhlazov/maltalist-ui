@@ -81,10 +81,11 @@ $(document).ready(function() {
             document.getElementById('profile-details').innerHTML = profileDetailsHTML;
 
             $('#create').click(function(e) {
-                window.location.href = '/create'
+                e.preventDefault();
+                loadContent('Create Listing');
                 history.pushState({}, '', '/create');
             });
-
+            
             const editProfileBtn = document.getElementById('edit-profile-btn');
             if (editProfileBtn) {
                 editProfileBtn.addEventListener('click', () => {
