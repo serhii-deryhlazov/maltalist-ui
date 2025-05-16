@@ -134,8 +134,8 @@ $(document).ready(function() {
         const tools = $('#search-bar');
     
         // Add search UI
-        tools.prepend(searchButton);
-        tools.prepend(searchInput);
+        tools.appendChild(searchInput);
+        tools.appendChild(searchButton);
     
         function fetchListings() {
             listingsContainer.html('<p>Loading...</p>');
