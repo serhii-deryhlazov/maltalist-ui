@@ -49,34 +49,33 @@ $(document).ready(function() {
                 profileDetailsHTML += `
                     <button id="edit-profile-btn">Edit Profile</button>
                     <button id="logout-btn">Log Out</button>
-                    </div>
-                    <div class="profile-listings">
                 `;
-
-                const myListings = await ListingService.getUserListings(currentUser.id);
-                if (myListings && myListings.length > 0) {
-                    profileDetailsHTML += `<h3>My Listings</h3><ul id="my-listings">`;
-                    myListings.forEach(listing => {
-                        const picture = listing.picture1 || 'https://via.placeholder.com/80';
-                        profileDetailsHTML += `
-                            <li style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
-                                <img src="${picture}" alt="${listing.title}" style="max-width: 80px; max-height: 80px;">
-                                <div>
-                                    <a href="/listing/${listing.id}"><strong>${listing.title}</strong></a>
-                                    <div>€${listing.price.toFixed(2)}</div>
-                                    <div>${listing.category || ''}</div>
-                                </div>
-                            </li>
-                        `;
-                    });
-                    profileDetailsHTML += `</ul>`;
-                } else {
-                    profileDetailsHTML += `<h3>My Listings</h3><p>No listings found.</p>`;
-                }
-                profileDetailsHTML += '</div>';
-            }else{
-                profileDetailsHTML += '</div>';
             }
+
+            profileDetailsHTML += '</div>';
+            profileDetailsHTML += '<div class="profile-listings">';
+            
+            const myListings = await ListingService.getUserListings(currentUser.id);
+            if (myListings && myListings.length > 0) {
+                profileDetailsHTML += `<h3>Listings</h3><ul id="my-listings">`;
+                myListings.forEach(listing => {
+                    const picture = listing.picture1 || 'https://via.placeholder.com/80';
+                    profileDetailsHTML += `
+                        <li style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                            <img src="${picture}" alt="${listing.title}" style="max-width: 80px; max-height: 80px;">
+                            <div>
+                                <a href="/listing/${listing.id}"><strong>${listing.title}</strong></a>
+                                <div>€${listing.price.toFixed(2)}</div>
+                                <div>${listing.category || ''}</div>
+                            </div>
+                        </li>
+                    `;
+                });
+                profileDetailsHTML += `</ul>`;
+            } else {
+                profileDetailsHTML += `<h3>Listings</h3><p>No listings found.</p>`;
+            }
+            profileDetailsHTML += '</div>';
 
             document.getElementById('profile-details').innerHTML = profileDetailsHTML;
 
