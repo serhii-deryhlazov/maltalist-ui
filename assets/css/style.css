@@ -36,8 +36,8 @@ body {
     gap: 3px;
 }
 .navbar a:hover, .navbar a.active {
-    background: #005fa3;
-    color: #fff;
+    background: #a8a8a8;
+    color: #f4f6fa;
 }
 
 /* Main Content */
