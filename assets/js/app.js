@@ -129,6 +129,13 @@ $(document).ready(function() {
 
     function loadHomePageData(params = { page: 1, limit: 10 }) {
         const listingsContainer = $('#listing-list');
+        const searchInput = $('<input type="text" id="search" placeholder="Search listings...">');
+        const searchButton = $('<button>Search</button>');
+        const tools = $('#tools');
+    
+        // Add search UI
+        tools.prepend(searchButton);
+        tools.prepend(searchInput);
     
         function fetchListings() {
             listingsContainer.html('<p>Loading...</p>');
@@ -180,15 +187,15 @@ $(document).ready(function() {
         fetchListings();
     
         // Search handler
-        $("#search-button").on('click', () => {
+        searchButton.on('click', () => {
             params.search = searchInput.val().trim();
             params.page = 1; // Reset to first page
             fetchListings();
         });
     
-        $("#search-input").on('keypress', (e) => {
+        searchInput.on('keypress', (e) => {
             if (e.key === 'Enter') {
-                $("#search-button").click();
+                searchButton.click();
             }
         });
 
