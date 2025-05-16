@@ -35,7 +35,8 @@ $(document).ready(function() {
         const profile = await UserProfileService.getUserProfile(userId);
 
         if (profile) {
-            let profileDetailsHTML = `
+            let profileDetailsHTML = '<div id="profile-info">';
+            profileDetailsHTML += `
                 <img src="${profile.userPicture || 'https://via.placeholder.com/100'}" alt="Profile Picture" style="max-width: 100px; max-height: 100px;">
                 <h2>${profile.userName || 'No Name Provided'}</h2>
             `;
@@ -48,6 +49,8 @@ $(document).ready(function() {
                 profileDetailsHTML += `
                     <button id="edit-profile-btn">Edit Profile</button>
                     <button id="logout-btn">Log Out</button>
+                    </div>
+                    <div class="profile-listings">
                 `;
 
                 const myListings = await ListingService.getUserListings(currentUser.id);
@@ -70,6 +73,9 @@ $(document).ready(function() {
                 } else {
                     profileDetailsHTML += `<h3>My Listings</h3><p>No listings found.</p>`;
                 }
+                profileDetailsHTML += '</div>';
+            }else{
+                profileDetailsHTML += '</div>';
             }
 
             document.getElementById('profile-details').innerHTML = profileDetailsHTML;
