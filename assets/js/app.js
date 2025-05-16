@@ -52,8 +52,7 @@ $(document).ready(function() {
                     <button id="create">Create Listing</button>
                 `;
                 $('#create').click(function(e) {
-                    e.preventDefault();
-                    loadContent('Create Listing');
+                    window.location.href = '/create'
                     history.pushState({}, '', '/create');
                 });
             }
