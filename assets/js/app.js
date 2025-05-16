@@ -51,10 +51,6 @@ $(document).ready(function() {
                     <button id="logout-btn">Log Out</button>
                     <button id="create">Create Listing</button>
                 `;
-                $('#create').click(function(e) {
-                    window.location.href = '/create'
-                    history.pushState({}, '', '/create');
-                });
             }
 
             profileDetailsHTML += '</div>';
@@ -83,6 +79,11 @@ $(document).ready(function() {
             profileDetailsHTML += '</div>';
 
             document.getElementById('profile-details').innerHTML = profileDetailsHTML;
+
+            $('#create').click(function(e) {
+                window.location.href = '/create'
+                history.pushState({}, '', '/create');
+            });
 
             const editProfileBtn = document.getElementById('edit-profile-btn');
             if (editProfileBtn) {
