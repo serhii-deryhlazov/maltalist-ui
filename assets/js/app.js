@@ -570,12 +570,7 @@ $(document).ready(function() {
         loadContent('Create Listing');
         history.pushState({}, '', '/create');
     });
-
-    const currentUser = CacheService.get("current_user");
-    if (currentUser && currentUser.id) {
-        $("#create").show();
-    }
-
+    
     $('#profile').click(function(e) {
         e.preventDefault();
         if (currentUser && currentUser.id) {
