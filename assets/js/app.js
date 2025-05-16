@@ -426,48 +426,104 @@ $(document).ready(function() {
 
     function loadCreateListingPage() {
         const form = document.getElementById('create-listing-form');
-        const picturesInput = document.getElementById('pictures');
-        const previewDiv = document.getElementById('preview');
-    
-        picturesInput.addEventListener('change', async () => {
-            previewDiv.innerHTML = ''; // Clear previous previews
-            const files = picturesInput.files;
-    
-            if (files.length > 10) {
-                alert('You can upload a maximum of 10 images.');
-                picturesInput.value = ''; // Clear the input
-                return;
-            }
-    
-            for (const file of files) {
-                if (!file.type.startsWith('image/')) {
-                    alert('Only image files are allowed.');
-                    picturesInput.value = ''; // Clear the input
-                    previewDiv.innerHTML = '';
-                    return;
+        const pictureInputsDiv = document.getElementById('picture-inputs');
+        const pictureFiles = Array(10).fill(null);
+
+        // Generate 10 file inputs and preview containers
+        pictureInputsDiv.innerHTML = '';
+        for (let i = 0; i < 10; i++) {
+            const wrapper = document.createElement('div');
+            wrapper.style.position = 'relative';
+            wrapper.style.width = '100px';
+            wrapper.style.height = '100px';
+
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            input.style.width = '100px';
+            input.style.height = '100px';
+            input.style.opacity = 1;
+            input.dataset.idx = i;
+
+            const preview = document.createElement('img');
+            preview.style.display = 'none';
+            preview.style.position = 'absolute';
+            preview.style.top = '0';
+            preview.style.left = '0';
+            preview.style.width = '100px';
+            preview.style.height = '100px';
+            preview.style.objectFit = 'cover';
+            preview.style.borderRadius = '6px';
+
+            const delBtn = document.createElement('button');
+            delBtn.type = 'button';
+            delBtn.textContent = '✕';
+            delBtn.style.position = 'absolute';
+            delBtn.style.top = '2px';
+            delBtn.style.right = '2px';
+            delBtn.style.background = 'rgba(0,0,0,0.6)';
+            delBtn.style.color = 'white';
+            delBtn.style.border = 'none';
+            delBtn.style.borderRadius = '50%';
+            delBtn.style.width = '22px';
+            delBtn.style.height = '22px';
+            delBtn.style.cursor = 'pointer';
+            delBtn.style.display = 'none';
+            delBtn.style.zIndex = '2';
+
+            // Handle file input change
+            input.addEventListener('change', function() {
+                const idx = parseInt(this.dataset.idx);
+                if (this.files && this.files[0]) {
+                    const file = this.files[0];
+                    if (!file.type.startsWith('image/')) {
+                        alert('Only image files are allowed.');
+                        this.value = '';
+                        preview.style.display = 'none';
+                        delBtn.style.display = 'none';
+                        pictureFiles[idx] = null;
+                        return;
+                    }
+                    preview.src = URL.createObjectURL(file);
+                    preview.style.display = 'block';
+                    delBtn.style.display = 'block';
+                    pictureFiles[idx] = file;
+                } else {
+                    preview.style.display = 'none';
+                    delBtn.style.display = 'none';
+                    pictureFiles[idx] = null;
                 }
-    
-                const img = document.createElement('img');
-                img.src = URL.createObjectURL(file);
-                img.style.maxWidth = '100px';
-                img.style.maxHeight = '100px';
-                previewDiv.appendChild(img);
-            }
-        });
-    
+            });
+
+            // Handle delete button
+            delBtn.addEventListener('click', function() {
+                input.value = '';
+                preview.style.display = 'none';
+                delBtn.style.display = 'none';
+                pictureFiles[i] = null;
+            });
+
+            wrapper.appendChild(input);
+            wrapper.appendChild(preview);
+            wrapper.appendChild(delBtn);
+            pictureInputsDiv.appendChild(wrapper);
+        }
+
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
             const formMessage = document.getElementById('form-message');
             formMessage.textContent = '';
-    
-            const files = picturesInput.files;
+
             const pictureData = {};
-    
             try {
-                for (let i = 0; i < Math.min(files.length, 10); i++) {
-                    const file = files[i];
-                    const base64String = await resizeAndConvertToBase64(file, 800, 0.7); // Resize to max 800px, 70% quality
-                    pictureData[`Picture${i + 1}`] = base64String;
+                let count = 0;
+                for (let i = 0; i < 10; i++) {
+                    const file = pictureFiles[i];
+                    if (file) {
+                        const base64String = await resizeAndConvertToBase64(file, 800, 0.7);
+                        pictureData[`Picture${i + 1}`] = base64String;
+                        count++;
+                    }
                 }
             } catch (error) {
                 console.error('Image processing error:', error);
@@ -475,23 +531,26 @@ $(document).ready(function() {
                 formMessage.style.color = 'red';
                 return;
             }
-    
+
             const data = {
                 Title: document.getElementById('name').value,
                 Description: document.getElementById('description').value,
                 Price: parseFloat(document.getElementById('price').value),
                 Category: document.getElementById('category').value || null,
                 UserId: CacheService.get('current_user')?.id,
-                ...pictureData // Spread the picture fields (Picture1, Picture2, etc.)
+                ...pictureData
             };
-    
+
             try {
                 const response = await ListingService.createListing(data);
                 if (response) {
                     formMessage.textContent = 'Listing created successfully!';
                     formMessage.style.color = 'green';
                     form.reset();
-                    previewDiv.innerHTML = ''; // Clear image previews
+                    // Clear previews and files
+                    Array.from(pictureInputsDiv.querySelectorAll('img')).forEach(img => img.style.display = 'none');
+                    Array.from(pictureInputsDiv.querySelectorAll('button')).forEach(btn => btn.style.display = 'none');
+                    pictureFiles.fill(null);
                 } else {
                     formMessage.textContent = 'Failed to create listing. Please try again.';
                     formMessage.style.color = 'red';
