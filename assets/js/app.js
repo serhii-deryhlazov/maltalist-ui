@@ -36,7 +36,7 @@ $(document).ready(function() {
 
         if (profile) {
             let profileDetailsHTML = `
-                <img src="${profile.picture || 'https://via.placeholder.com/100'}" alt="Profile Picture" style="max-width: 100px; max-height: 100px;">
+                <img src="${profile.userPicture || 'https://via.placeholder.com/100'}" alt="Profile Picture" style="max-width: 100px; max-height: 100px;">
                 <h2>${profile.userName || 'No Name Provided'}</h2>
             `;
 
