@@ -38,6 +38,117 @@
         height: 24px;
         margin-bottom: 5px;
     }
+
+    /* Home Page Listings Styles */
+    #listings-page {
+        max-width: 900px;
+        margin: 30px auto;
+        padding: 24px;
+        background: #fff;
+        border-radius: 16px;
+        box-shadow: 0 4px 32px rgba(0,0,0,0.07);
+    }
+
+    #search {
+        width: 250px;
+        padding: 8px 12px;
+        margin-right: 10px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        font-size: 1rem;
+    }
+
+    #listings-page button {
+        padding: 8px 18px;
+        background: #0078d7;
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        font-size: 1rem;
+        cursor: pointer;
+        margin-bottom: 18px;
+        transition: background 0.2s;
+    }
+    #listings-page button:hover {
+        background: #005fa3;
+    }
+
+    #listing-list ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+        gap: 24px;
+    }
+
+    #listing-list li {
+        background: #f8fafc;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        padding: 18px;
+        display: flex;
+        align-items: flex-start;
+        gap: 16px;
+        transition: box-shadow 0.2s;
+    }
+    #listing-list li:hover {
+        box-shadow: 0 6px 24px rgba(0,0,0,0.10);
+    }
+
+    #listing-list img {
+        border-radius: 8px;
+        background: #e9ecef;
+        width: 100px;
+        height: 100px;
+        object-fit: cover;
+        flex-shrink: 0;
+    }
+
+    #listing-list h3 {
+        margin: 0 0 6px 0;
+        font-size: 1.15rem;
+    }
+    #listing-list h3 a {
+        color: #0078d7;
+        text-decoration: none;
+        transition: color 0.2s;
+    }
+    #listing-list h3 a:hover {
+        color: #005fa3;
+        text-decoration: underline;
+    }
+
+    #listing-list p {
+        margin: 2px 0;
+        color: #444;
+        font-size: 0.98rem;
+    }
+
+    .pagination {
+        margin: 28px 0 0 0;
+        text-align: center;
+    }
+    .pagination button {
+        margin: 0 8px;
+        padding: 7px 16px;
+        font-size: 1rem;
+        border-radius: 5px;
+        border: none;
+        background: #e9ecef;
+        color: #333;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+    .pagination button:hover {
+        background: #0078d7;
+        color: #fff;
+    }
+    .pagination span {
+        margin: 0 12px;
+        font-weight: 500;
+        color: #555;
+    }
 </style>
 
 <div id="listings-page">
