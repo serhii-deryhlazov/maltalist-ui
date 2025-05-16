@@ -56,7 +56,7 @@ $(document).ready(function() {
             profileDetailsHTML += '</div>';
             profileDetailsHTML += '<div id="profile-listings">';
             
-            const myListings = await ListingService.getUserListings(currentUser.id);
+            const myListings = await ListingService.getUserListings(userId);
             if (myListings && myListings.length > 0) {
                 profileDetailsHTML += `<h3>Listings</h3><ul id="my-listings">`;
                 myListings.forEach(listing => {
