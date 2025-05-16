@@ -51,6 +51,11 @@ $(document).ready(function() {
                     <button id="logout-btn">Log Out</button>
                     <button id="create">Create Listing</button>
                 `;
+                $('#create').click(function(e) {
+                    e.preventDefault();
+                    loadContent('Create Listing');
+                    history.pushState({}, '', '/create');
+                });
             }
 
             profileDetailsHTML += '</div>';
@@ -565,12 +570,6 @@ $(document).ready(function() {
         history.pushState({}, '', '/');
     });
 
-    $('#create').click(function(e) {
-        e.preventDefault();
-        loadContent('Create Listing');
-        history.pushState({}, '', '/create');
-    });
-    
     $('#profile').click(function(e) {
         e.preventDefault();
         if (currentUser && currentUser.id) {
