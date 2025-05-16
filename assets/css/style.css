@@ -90,18 +90,6 @@ body {
 }
 
 @media (max-width: 430px) {
-    .navbar nav {
-        flex-direction: column;
-        gap: 0;
-        height: auto;
-        padding: 8px 0;
-    }
-    .navbar a {
-        display: block;
-        margin: 4px 0;
-        width: 100%;
-        text-align: center;
-    }
     #content {
         padding: 8px 2vw 16px 2vw;
         border-radius: 6px;
