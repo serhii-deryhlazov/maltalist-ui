@@ -305,79 +305,122 @@ $(document).ready(function() {
                                     </select>
                                 </div>
                                 <div>
-                                    <label for="edit-pictures">Pictures (up to 10):</label>
-                                    <input type="file" id="edit-pictures" name="pictures" accept="image/*" multiple>
-                                    <div id="edit-preview" style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px;">`;
-                        
-                        // Prepopulate existing images
-                        for (let i = 1; i <= 10; i++) {
-                            const picKey = `picture${i}`;
-                            if (listing[picKey]) {
-                                editFormHtml += `<img src="${listing[picKey]}" alt="Picture ${i}" style="max-width: 100px; max-height: 100px;">`;
-                            }
-                        }
-                        
-                        editFormHtml += `       </div>
+                                    <label>Pictures (up to 10):</label>
+                                    <div id="edit-picture-inputs" style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px;"></div>
                                 </div>
                                 <button type="submit">Save Changes</button>
                             </form>
                             <div id="edit-form-message"></div>
                         `;
                         listingContainer.html(editFormHtml);
-        
-                        const editPicturesInput = document.getElementById('edit-pictures');
-                        const editPreviewDiv = document.getElementById('edit-preview');
-        
-                        // Handle new picture previews
-                        editPicturesInput.addEventListener('change', async () => {
-                            editPreviewDiv.innerHTML = ''; // Clear previews
-                            const files = editPicturesInput.files;
-                
-                            if (files.length > 10) {
-                                alert('You can upload a maximum of 10 images.');
-                                editPicturesInput.value = '';
-                                return;
+
+                        // Picture input logic
+                        const editPictureInputsDiv = document.getElementById('edit-picture-inputs');
+                        const editPictureFiles = Array(10).fill(null);
+
+                        for (let i = 0; i < 10; i++) {
+                            const wrapper = document.createElement('div');
+                            wrapper.style.position = 'relative';
+                            wrapper.style.width = '100px';
+                            wrapper.style.height = '100px';
+
+                            const input = document.createElement('input');
+                            input.type = 'file';
+                            input.accept = 'image/*';
+                            input.style.width = '100px';
+                            input.style.height = '100px';
+                            input.style.opacity = 1;
+                            input.dataset.idx = i;
+
+                            const preview = document.createElement('img');
+                            preview.style.display = 'none';
+                            preview.style.position = 'absolute';
+                            preview.style.top = '0';
+                            preview.style.left = '0';
+                            preview.style.width = '100px';
+                            preview.style.height = '100px';
+                            preview.style.objectFit = 'cover';
+                            preview.style.borderRadius = '6px';
+
+                            const delBtn = document.createElement('button');
+                            delBtn.type = 'button';
+                            delBtn.textContent = '✕';
+                            delBtn.style.position = 'absolute';
+                            delBtn.style.top = '2px';
+                            delBtn.style.right = '2px';
+                            delBtn.style.background = 'rgba(0,0,0,0.6)';
+                            delBtn.style.color = 'white';
+                            delBtn.style.border = 'none';
+                            delBtn.style.borderRadius = '50%';
+                            delBtn.style.width = '22px';
+                            delBtn.style.height = '22px';
+                            delBtn.style.cursor = 'pointer';
+                            delBtn.style.display = 'none';
+                            delBtn.style.zIndex = '2';
+
+                            // Prepopulate with existing image if present
+                            const picKey = `picture${i+1}`;
+                            if (listing[picKey]) {
+                                preview.src = listing[picKey];
+                                preview.style.display = 'block';
+                                delBtn.style.display = 'block';
+                                editPictureFiles[i] = null; // Will use existing image unless replaced
                             }
-                
-                            for (const file of files) {
-                                if (!file.type.startsWith('image/')) {
-                                    alert('Only image files are allowed.');
-                                    editPicturesInput.value = '';
-                                    editPreviewDiv.innerHTML = '';
-                                    return;
+
+                            // Handle file input change
+                            input.addEventListener('change', function() {
+                                const idx = parseInt(this.dataset.idx);
+                                if (this.files && this.files[0]) {
+                                    const file = this.files[0];
+                                    if (!file.type.startsWith('image/')) {
+                                        alert('Only image files are allowed.');
+                                        this.value = '';
+                                        preview.style.display = 'none';
+                                        delBtn.style.display = 'none';
+                                        editPictureFiles[idx] = null;
+                                        return;
+                                    }
+                                    preview.src = URL.createObjectURL(file);
+                                    preview.style.display = 'block';
+                                    delBtn.style.display = 'block';
+                                    editPictureFiles[idx] = file;
+                                } else {
+                                    preview.style.display = 'none';
+                                    delBtn.style.display = 'none';
+                                    editPictureFiles[idx] = null;
                                 }
-                                const img = document.createElement('img');
-                                img.src = URL.createObjectURL(file);
-                                img.style.maxWidth = '100px';
-                                img.style.maxHeight = '100px';
-                                editPreviewDiv.appendChild(img);
-                            }
-                        });
-        
+                            });
+
+                            // Handle delete button
+                            delBtn.addEventListener('click', function() {
+                                input.value = '';
+                                preview.style.display = 'none';
+                                delBtn.style.display = 'none';
+                                editPictureFiles[i] = null;
+                                listing[`picture${i+1}`] = null;
+                            });
+
+                            wrapper.appendChild(input);
+                            wrapper.appendChild(preview);
+                            wrapper.appendChild(delBtn);
+                            editPictureInputsDiv.appendChild(wrapper);
+                        }
+
                         // Edit form submission
                         document.getElementById('edit-listing-form').addEventListener('submit', async (e) => {
                             e.preventDefault();
                             const editFormMessage = document.getElementById('edit-form-message');
                             editFormMessage.textContent = '';
 
-                            const editFiles = editPicturesInput.files;
                             const pictureData = {};
-
-                            // Process new image uploads if provided
                             try {
-                                if (editFiles.length > 0) {
-                                    for (let i = 0; i < Math.min(editFiles.length, 10); i++) {
-                                        const file = editFiles[i];
+                                for (let i = 0; i < 10; i++) {
+                                    const file = editPictureFiles[i];
+                                    if (file) {
                                         const base64String = await resizeAndConvertToBase64(file, 800, 0.7);
                                         pictureData[`Picture${i + 1}`] = base64String;
-                                    }
-                                } else {
-                                    // No new images were uploaded, so use existing listing pictures.
-                                    for (let i = 1; i <= 10; i++) {
-                                        // Assuming your listing object contains keys 'picture1', 'picture2', etc.
-                                        if (listing[`picture${i}`]) {
-                                            pictureData[`Picture${i}`] = listing[`picture${i}`];
-                                        }
+                                    } else if (listing[`picture${i+1}`]) {
+                                        pictureData[`Picture${i + 1}`] = listing[`picture${i+1}`];
                                     }
                                 }
                             } catch (error) {
@@ -392,7 +435,7 @@ $(document).ready(function() {
                                 Description: document.getElementById('edit-description').value,
                                 Price: parseFloat(document.getElementById('edit-price').value),
                                 Category: document.getElementById('edit-category').value || null,
-                                UserId: currentUser.id,
+                                UserId: CacheService.get("current_user").id,
                                 ...pictureData
                             };
 
@@ -401,7 +444,6 @@ $(document).ready(function() {
                                 if (response) {
                                     editFormMessage.textContent = 'Listing updated successfully!';
                                     editFormMessage.style.color = 'green';
-                                    // Reload updated listing details
                                     loadListingDetailsPage();
                                 } else {
                                     editFormMessage.textContent = 'Failed to update listing. Please try again.';
