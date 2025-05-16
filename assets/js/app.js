@@ -218,13 +218,6 @@ $(document).ready(function() {
                     <p><strong>Posted by:</strong> <a href="/profile/${listing.userId}">${author.userName}</a></p>
                 `;
 
-                $('.carousel-thumb').on('click', function() {
-                    const idx = $(this).data('idx');
-                    $('#carousel-big-img').attr('src', pictures[idx]);
-                    $('.carousel-thumb').removeClass('selected');
-                    $(this).addClass('selected');
-                });
-                
                 const currentUser = CacheService.get("current_user");
                 if (currentUser && currentUser.id === listing.userId) {
                     listingHtml += `<button id="edit-listing-btn">Edit Listing</button>`;
@@ -232,6 +225,13 @@ $(document).ready(function() {
                 
                 listingContainer.html(listingHtml);
                 
+                $('.carousel-thumb').on('click', function() {
+                    const idx = $(this).data('idx');
+                    $('#carousel-big-img').attr('src', pictures[idx]);
+                    $('.carousel-thumb').removeClass('selected');
+                    $(this).addClass('selected');
+                });
+
                 // Edit Listing handler
                 const editBtn = document.getElementById("edit-listing-btn");
                 if (editBtn) {
