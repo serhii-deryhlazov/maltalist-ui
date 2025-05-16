@@ -53,7 +53,7 @@ $(document).ready(function() {
             }
 
             profileDetailsHTML += '</div>';
-            profileDetailsHTML += '<div class="profile-listings">';
+            profileDetailsHTML += '<div id="profile-listings">';
             
             const myListings = await ListingService.getUserListings(currentUser.id);
             if (myListings && myListings.length > 0) {
