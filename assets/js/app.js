@@ -274,9 +274,9 @@ $(document).ready(function() {
                 }
                 else{
                     if (author.phoneNumber) {
-                        listingHtml += `<p><strong>Call:</strong> ${author.phoneNumber}</p>`;
+                        listingHtml += `<p id="listing-contact"><strong>Call:</strong> ${author.phoneNumber}</p>`;
                     } else if (author.email) {
-                        listingHtml += `<p><strong>Email:</strong> ${author.email}</p>`;
+                        listingHtml += `<p id="listing-contact"><strong>Email:</strong> ${author.email}</p>`;
                     }
                 }
                 
