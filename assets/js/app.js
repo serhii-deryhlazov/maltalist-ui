@@ -251,9 +251,9 @@ $(document).ready(function() {
                     <div class="listing-details-info">
                     <h2>${listing.title}</h2>
                     <p><strong>Price:</strong> ${listing.price.toFixed(2)} EUR</p>
-                    <p><strong>Description:</strong> ${listing.description || 'No description available'}</p>
                     <p><strong>Category:</strong> ${listing.category || 'None'}</p>
                     <p><strong>Posted by:</strong> <a href="/profile/${listing.userId}">${author.userName}</a></p>
+                    <p><strong>Description:</strong> ${listing.description || 'No description available'}</p>
                     </div>
                 `;
 
