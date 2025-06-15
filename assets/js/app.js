@@ -47,9 +47,15 @@ $(document).ready(function() {
 
             if (currentUser && currentUser.id === profile.id) {
                 profileDetailsHTML += `
-                    <button id="create">Create Listing</button>
-                    <button id="edit-profile-btn">Edit Profile</button>
-                    <button id="logout-btn">Log Out</button>
+                    <button id="create">
+                        <span class="material-symbols-outlined">add</span> Create Listing
+                    </button>
+                    <button id="edit-profile-btn">
+                        <span class="material-symbols-outlined">edit</span> Edit Profile
+                    </button>
+                    <button id="logout-btn">
+                        <span class="material-symbols-outlined">logout</span> Log Out
+                    </button>
                 `;
             }
 
