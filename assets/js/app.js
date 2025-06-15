@@ -150,6 +150,7 @@ $(document).ready(function() {
                                 <img src="${picture}" alt="${listing.title}" style="max-width: 100px; max-height: 100px;">
                                 <div>
                                     <h3><a href="/listing/${listing.id}">${listing.title}</a></h3>
+                                    <p>${listing.description ? listing.description.substring(0, 100) + '...' : 'No description available'}</p>
                                     <p>${listing.price.toFixed(2)} EUR</p>
                                 </div>
                             </li>
