@@ -30,7 +30,7 @@ body {
     padding: 0 16px;
     height: 60px;
 }
-.navbar a {
+.#profile {
     color: #034d88;
     text-decoration: none;
     font-size: 1.1rem;
@@ -42,7 +42,7 @@ body {
     align-items: anchor-center;
     gap: 3px;
 }
-.navbar a:hover, .navbar a.active {
+.#profile:hover, .#profile.active {
     background: #034d88;
     color: #f4f6fa;
 }
