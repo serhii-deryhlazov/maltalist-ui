@@ -53,53 +53,47 @@
 
     #profile-info button {
         width: 100%;
-    }
-
-    #profile-info button#create {
-        border: 2px solid #179944d4;
-        color: #179944d4;
-        border: none;
+        border-width: 2px;
         border-radius: 6px;
         padding: 8px 18px;
-        margin-right: 8px;
         font-size: 1rem;
         cursor: pointer;
-        transition: background 0.2s;
+        transition: background 0.2s, color 0.2s, border-color 0.2s;
+        background: none;
+        margin-right: 8px;
+    }
+
+    /* Create Listing - Green */
+    #profile-info button#create {
+        border-color: #179944d4;
+        color: #179944d4;
     }
     #profile-info button#create:hover {
-        color: #179944;
+        background-color: #179944;
+        color: #fefefe;
         border-color: #179944;
     }
 
+    /* Edit Profile - Orange */
     #profile-info button#edit-profile-btn {
-        border: 2px solid #e67b00d7;
+        border-color: #e67b00d7;
         color: #e67b00d7;
-        border: none;
-        border-radius: 6px;
-        padding: 8px 18px;
-        margin-right: 8px;
-        font-size: 1rem;
-        cursor: pointer;
-        transition: background 0.2s;
     }
     #profile-info button#edit-profile-btn:hover {
-        color: #e67c00;
+        background-color: #e67c00;
+        color: #fefefe;
         border-color: #e67c00;
     }
 
+    /* Log Out - Red */
     #profile-info button#logout-btn {
-        border: 2px solid #b71c1ce5;
+        border-color: #b71c1ce5;
         color: #b71c1ce5;
-        border: none;
-        border-radius: 6px;
-        padding: 8px 18px;
-        font-size: 1rem;
-        cursor: pointer;
-        transition: background 0.2s;
     }
     #profile-info button#logout-btn:hover {
+        background-color: #b71c1c;
+        color: #fefefe;
         border-color: #b71c1c;
-        color: #b71c1c;
     }
 </style>
 <div id="user-profile-page">
