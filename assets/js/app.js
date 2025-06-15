@@ -272,6 +272,13 @@ $(document).ready(function() {
                 if (currentUser && currentUser.id === listing.userId) {
                     listingHtml += `<button id="edit-listing-btn">Edit Listing</button>`;
                 }
+                else{
+                    if (author.phoneNumber) {
+                        listingHtml += `<p><strong>Call:</strong> ${author.phoneNumber}</p>`;
+                    } else if (author.email) {
+                        listingHtml += `<p><strong>Email:</strong> ${author.email}</p>`;
+                    }
+                }
                 
                 listingContainer.html(listingHtml);
                 
