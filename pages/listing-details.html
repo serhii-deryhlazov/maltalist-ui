@@ -45,6 +45,20 @@
     .carousel-thumb.selected {
         border: 2px solid #0078D7;
     }
+
+    .listing-details {
+        display: flex;
+        flex-flow: row nowrap;
+        gap: 32px;
+        align-items: flex-start;
+    }
+
+    @media (max-width: 700px) {
+        .listing-details-flex {
+            flex-flow: column nowrap;
+            gap: 18px;
+        }
+    }
 </style>
 <div id="listing-details">
     <p>Loading listing details...</p>
