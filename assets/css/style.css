@@ -30,7 +30,7 @@ body {
     padding: 0 16px;
     height: 60px;
 }
-.#profile {
+.navbar a {
     color: #034d88;
     text-decoration: none;
     font-size: 1.1rem;
@@ -42,9 +42,13 @@ body {
     align-items: anchor-center;
     gap: 3px;
 }
-.#profile:hover, .#profile.active {
+.navbar a:hover, .navbar a.active {
     background: #034d88;
     color: #f4f6fa;
+}
+
+#home, #home:hover, #home.active {
+    background: none;
 }
 
 /* Main Content */
