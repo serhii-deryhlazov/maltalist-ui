@@ -31,7 +31,7 @@ body {
     height: 60px;
 }
 .navbar a {
-    color: #045494;
+    color: #034d88;
     text-decoration: none;
     font-size: 1.1rem;
     font-weight: 500;
@@ -43,7 +43,7 @@ body {
     gap: 3px;
 }
 .navbar a:hover, .navbar a.active {
-    background: #045494;
+    background: #034d88;
     color: #f4f6fa;
 }
 
@@ -61,7 +61,7 @@ body {
 
 /* Footer */
 .footer {
-    color: #045494;
+    color: #034d88;
     text-align: center;
     padding: 18px 10px 12px 10px;
     font-size: 0.98rem;
