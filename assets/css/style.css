@@ -14,10 +14,12 @@ body {
 .navbar {
     background: #f4f6fa;
     margin-top: 25px;
+    width: 90%;
+    padding-left: 5%;
 }
 .navbar nav {
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
     gap: 32px;
     padding: 0 16px;
