@@ -37,7 +37,9 @@ $(document).ready(function() {
         if (profile) {
             let profileDetailsHTML = '<div id="profile-info">';
             profileDetailsHTML += `
+                <div id="profile-header">
                 <img src="${profile.userPicture || 'https://via.placeholder.com/100'}" alt="Profile Picture">
+                <div id="profile-header-data">
                 <h2>${profile.userName || 'No Name Provided'}</h2>
             `;
 
@@ -47,6 +49,7 @@ $(document).ready(function() {
 
             if (currentUser && currentUser.id === profile.id) {
                 profileDetailsHTML += `
+                    </div></div>
                     <button id="create">
                         <span class="material-symbols-outlined">add</span> Create Listing
                     </button>
