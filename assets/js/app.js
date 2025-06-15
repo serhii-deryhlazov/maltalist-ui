@@ -71,14 +71,15 @@ $(document).ready(function() {
                 myListings.forEach(listing => {
                     const picture = listing.picture1 || 'https://via.placeholder.com/80';
                     profileDetailsHTML += `
-                        <li style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
-                            <img src="${picture}" alt="${listing.title}" style="max-width: 80px; max-height: 80px;">
-                            <div>
-                                <a href="/listing/${listing.id}"><strong>${listing.title}</strong></a>
-                                <div>${listing.price.toFixed(2)}€</div>
-                                <div>${listing.category || ''}</div>
+                    <a href="/listing/${listing.id}">
+                        <li class="profile-listing">
+                            <img src="${picture}" alt="${listing.title}">
+                            <div class="listing-info">
+                                <strong>${listing.title}</strong>
+                                <span>${listing.category || ''} | ${listing.price.toFixed(2)}€</span>
                             </div>
                         </li>
+                    </a>
                     `;
                 });
                 profileDetailsHTML += `</ul>`;
