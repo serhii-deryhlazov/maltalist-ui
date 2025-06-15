@@ -71,7 +71,7 @@ $(document).ready(function() {
                 myListings.forEach(listing => {
                     const picture = listing.picture1 || 'https://via.placeholder.com/80';
                     profileDetailsHTML += `
-                    <a href="/listing/${listing.id}">
+                    <a class="profile-listing-link" href="/listing/${listing.id}">
                         <li class="profile-listing">
                             <img src="${picture}" alt="${listing.title}">
                             <div class="listing-info">
