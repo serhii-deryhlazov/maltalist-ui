@@ -693,7 +693,7 @@ $(document).ready(function() {
             loadContent('My Profile');
             history.pushState({}, '', `/profile/${currentUser.id}`);
         } else {
-            $('#content').html(`<h1>No User Logged In</h1>
+            $('#content').html(`<div id="nouser"><h1>No User Logged In</h1>
                 <script src="https://accounts.google.com/gsi/client" async defer></script>
                 <div id="g_id_onload"
                     data-client_id="763140433455-9tudkmcpnbec0dv4ndej56r1kho6hd3o.apps.googleusercontent.com"
@@ -708,7 +708,7 @@ $(document).ready(function() {
                     data-text="sign_in_with"
                     data-size="large"
                     data-logo_alignment="left">
-                </div>`);
+                </div></div>`);
         }
     });
 

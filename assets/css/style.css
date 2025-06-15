@@ -51,6 +51,16 @@ body {
     background: none;
 }
 
+#nouser
+{
+    display: flex;
+    flex-flow: column;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+}
+
 /* Main Content */
 #content {
     flex: 1 0 auto;
