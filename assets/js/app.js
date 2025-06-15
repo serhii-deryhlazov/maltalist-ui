@@ -127,7 +127,7 @@ $(document).ready(function() {
         }
     }
 
-    function loadHomePageData(params = { page: 1, limit: 10 }) {
+    function loadHomePageData(params = { page: 1, limit: 9 }) {
         const listingsContainer = $('#listing-list');
         const searchInput = $('<input type="text" id="search" placeholder="Search listings...">');
         const searchButton = $('<button>Search</button>');
