@@ -495,14 +495,14 @@ $(document).ready(function() {
         for (let i = 0; i < 10; i++) {
             const wrapper = document.createElement('div');
             wrapper.style.position = 'relative';
-            wrapper.style.width = '100px';
-            wrapper.style.height = '100px';
+            wrapper.style.width = '300px';
+            wrapper.style.height = '300px';
 
             const input = document.createElement('input');
             input.type = 'file';
             input.accept = 'image/*';
-            input.style.width = '100px';
-            input.style.height = '100px';
+            input.style.width = '300px';
+            input.style.height = '300px';
             input.style.opacity = 1;
             input.dataset.idx = i;
 
@@ -511,8 +511,8 @@ $(document).ready(function() {
             preview.style.position = 'absolute';
             preview.style.top = '0';
             preview.style.left = '0';
-            preview.style.width = '100px';
-            preview.style.height = '100px';
+            preview.style.width = '300px';
+            preview.style.height = '300px';
             preview.style.objectFit = 'cover';
             preview.style.borderRadius = '6px';
 
