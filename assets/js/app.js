@@ -497,24 +497,49 @@ $(document).ready(function() {
             wrapper.style.position = 'relative';
             wrapper.style.width = '300px';
             wrapper.style.height = '300px';
+            wrapper.style.display = 'flex';
+            wrapper.style.alignItems = 'center';
+            wrapper.style.justifyContent = 'center';
 
             const input = document.createElement('input');
             input.type = 'file';
             input.accept = 'image/*';
-            input.style.width = '300px';
-            input.style.height = '300px';
-            input.style.opacity = 1;
+            input.style.display = 'none';
             input.dataset.idx = i;
 
-            const preview = document.createElement('img');
-            preview.style.display = 'none';
-            preview.style.position = 'absolute';
-            preview.style.top = '0';
-            preview.style.left = '0';
+            const preview = document.createElement('div');
             preview.style.width = '300px';
             preview.style.height = '300px';
-            preview.style.objectFit = 'cover';
-            preview.style.borderRadius = '6px';
+            preview.style.display = 'flex';
+            preview.style.alignItems = 'center';
+            preview.style.justifyContent = 'center';
+            preview.style.background = '#f9fafb';
+            preview.style.border = '2px dashed #bfc9d9';
+            preview.style.borderRadius = '8px';
+            preview.style.cursor = 'pointer';
+            preview.style.position = 'relative';
+            preview.style.overflow = 'hidden';
+            preview.style.transition = 'border 0.2s';
+
+            const plus = document.createElement('span');
+            plus.textContent = '+';
+            plus.style.fontSize = '2.5rem';
+            plus.style.color = '#bfc9d9';
+            plus.style.position = 'absolute';
+            plus.style.left = '50%';
+            plus.style.top = '50%';
+            plus.style.transform = 'translate(-50%, -50%)';
+            plus.style.pointerEvents = 'none';
+
+            const img = document.createElement('img');
+            img.style.display = 'none';
+            img.style.width = '100%';
+            img.style.height = '100%';
+            img.style.objectFit = 'cover';
+            img.style.borderRadius = '8px';
+            img.style.position = 'absolute';
+            img.style.top = '0';
+            img.style.left = '0';
 
             const delBtn = document.createElement('button');
             delBtn.type = 'button';
@@ -532,6 +557,8 @@ $(document).ready(function() {
             delBtn.style.display = 'none';
             delBtn.style.zIndex = '2';
 
+            preview.addEventListener('click', () => input.click());
+
             // Handle file input change
             input.addEventListener('change', function() {
                 const idx = parseInt(this.dataset.idx);
@@ -540,30 +567,41 @@ $(document).ready(function() {
                     if (!file.type.startsWith('image/')) {
                         alert('Only image files are allowed.');
                         this.value = '';
-                        preview.style.display = 'none';
+                        img.style.display = 'none';
+                        plus.style.display = 'block';
                         delBtn.style.display = 'none';
                         pictureFiles[idx] = null;
+                        preview.style.border = '2px dashed #bfc9d9';
                         return;
                     }
-                    preview.src = URL.createObjectURL(file);
-                    preview.style.display = 'block';
+                    img.src = URL.createObjectURL(file);
+                    img.style.display = 'block';
+                    plus.style.display = 'none';
                     delBtn.style.display = 'block';
                     pictureFiles[idx] = file;
+                    preview.style.border = '2px solid #4f8cff';
                 } else {
-                    preview.style.display = 'none';
+                    img.style.display = 'none';
+                    plus.style.display = 'block';
                     delBtn.style.display = 'none';
                     pictureFiles[idx] = null;
+                    preview.style.border = '2px dashed #bfc9d9';
                 }
             });
 
             // Handle delete button
-            delBtn.addEventListener('click', function() {
+            delBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
                 input.value = '';
-                preview.style.display = 'none';
+                img.style.display = 'none';
+                plus.style.display = 'block';
                 delBtn.style.display = 'none';
                 pictureFiles[i] = null;
+                preview.style.border = '2px dashed #bfc9d9';
             });
 
+            preview.appendChild(img);
+            preview.appendChild(plus);
             wrapper.appendChild(input);
             wrapper.appendChild(preview);
             wrapper.appendChild(delBtn);
