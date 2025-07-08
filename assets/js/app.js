@@ -318,7 +318,7 @@ $(document).ready(function() {
                                         <option value="Clothing" ${listing.category==='Clothing' ? 'selected' : ''}>Clothing</option>
                                         <option value="Vehicles" ${listing.category==='Vehicles' ? 'selected' : ''}>Vehicles</option>
                                         <option value="Real Estate" ${listing.category==='Real Estate' ? 'selected' : ''}>Real Estate</option>
-                                        <option value="Sports" ${listing.category==='Sports' ? 'selected' : ''}>Sports</option>
+                                        <option value="Sports&Hobby" ${listing.category==='Sports&Hobby' ? 'selected' : ''}>Sports&Hobby</option>
                                         <option value="Books" ${listing.category==='Books' ? 'selected' : ''}>Books</option>
                                         <option value="Other" ${listing.category==='Other' ? 'selected' : ''}>Other</option>
                                     </select>
