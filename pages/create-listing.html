@@ -1,3 +1,148 @@
+<style>
+    h2 {
+        text-align: center;
+        margin-top: 32px;
+        color: #2a3a4a;
+        font-weight: 600;
+        letter-spacing: 1px;
+    }
+
+    /* Form container */
+    form#create-listing-form {
+        background: #fff;
+        max-width: 480px;
+        margin: 32px auto 0 auto;
+        padding: 32px 28px 24px 28px;
+        border-radius: 12px;
+        box-shadow: 0 2px 16px rgba(44, 62, 80, 0.08);
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    /* Form fields */
+    form#create-listing-form div {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    label {
+        font-size: 1rem;
+        color: #3a4a5a;
+        font-weight: 500;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    textarea,
+    select {
+        padding: 10px 12px;
+        border: 1px solid #d1d5db;
+        border-radius: 6px;
+        font-size: 1rem;
+        background: #f9fafb;
+        transition: border 0.2s;
+    }
+
+    input[type="text"]:focus,
+    input[type="number"]:focus,
+    textarea:focus,
+    select:focus {
+        border-color: #4f8cff;
+        outline: none;
+        background: #fff;
+    }
+
+    textarea {
+        min-height: 80px;
+        resize: vertical;
+    }
+
+    /* Picture inputs */
+    #picture-inputs {
+        gap: 12px;
+    }
+
+    .picture-upload {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 90px;
+    }
+
+    .picture-upload input[type="file"] {
+        display: none;
+    }
+
+    .picture-preview {
+        width: 80px;
+        height: 80px;
+        background: #e5e7eb;
+        border: 1px dashed #bfc9d9;
+        border-radius: 8px;
+        object-fit: cover;
+        margin-bottom: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        color: #bfc9d9;
+        cursor: pointer;
+        transition: border 0.2s;
+    }
+
+    .picture-preview:hover {
+        border-color: #4f8cff;
+    }
+
+    /* Submit button */
+    button[type="submit"] {
+        background: linear-gradient(90deg, #4f8cff 0%, #3a7bd5 100%);
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        padding: 12px 0;
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        margin-top: 10px;
+        transition: background 0.2s;
+    }
+
+    button[type="submit"]:hover {
+        background: linear-gradient(90deg, #3a7bd5 0%, #4f8cff 100%);
+    }
+
+    /* Form message */
+    #form-message {
+        text-align: center;
+        margin-top: 18px;
+        font-size: 1rem;
+        color: #e74c3c;
+        min-height: 24px;
+    }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+        form#create-listing-form {
+            max-width: 98vw;
+            padding: 18px 6vw 18px 6vw;
+        }
+        #picture-inputs {
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .picture-upload {
+            width: 70px;
+        }
+        .picture-preview {
+            width: 60px;
+            height: 60px;
+            font-size: 1.3rem;
+        }
+    }
+</style>
 <h2>Create a New Listing</h2>
 <form id="create-listing-form">
     <div>
