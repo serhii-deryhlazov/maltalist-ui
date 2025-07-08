@@ -21,7 +21,7 @@
     .form-wrapper div {
         display: flex;
         flex-direction: column;
-        gap: 6px;
+        gap: 25px;
         width: 40%;
     }
 
@@ -59,9 +59,11 @@
 
     /* Picture inputs */
     #picture-inputs {
-        gap: 12px;
+        display: grid !important;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+        margin-top: 10px;
     }
-
     .picture-upload {
         display: flex;
         flex-direction: column;
