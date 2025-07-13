@@ -157,7 +157,7 @@ $(document).ready(function() {
                         const picture = listing.picture1 || 'https://via.placeholder.com/100';
                         listingsHtml += `
                             <li>
-                                <img src="${picture}" alt="${listing.title}" style="max-width: 100px; max-height: 100px;">
+                                <img src="${picture}" alt="${listing.title}">
                                 <div>
                                     <h3><a href="/listing/${listing.id}">${listing.title}</a></h3>
                                     <p>${listing.description ? listing.description.substring(0, 100) + '...' : 'No description available'}</p>
