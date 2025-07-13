@@ -6,6 +6,16 @@ class ListingService {
     return await HttpService.get(`/api/Listings/minimal?${query}`);
   }
 
+  static async addListingPictures(listingId, pictures) {
+    const formData = new FormData();
+    pictures.forEach((file, idx) => {
+      formData.append(`Picture${idx + 1}`, file);
+    });
+    return await HttpService.post(`/api/Listings/${listingId}/pictures`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    });
+  }
+
   static async getListingById(id) {
     return await HttpService.get(`/api/Listings/${id}`);
   }

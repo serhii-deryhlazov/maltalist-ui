@@ -638,13 +638,26 @@ $(document).ready(function() {
                 Description: document.getElementById('description').value,
                 Price: parseFloat(document.getElementById('price').value),
                 Category: document.getElementById('category').value || null,
-                UserId: CacheService.get('current_user')?.id,
-                ...pictureData
+                UserId: CacheService.get('current_user')?.id
             };
 
             try {
                 const response = await ListingService.createListing(data);
-                if (response) {
+                if (response && response.id) {
+                    
+                    const pictures = pictureFiles.filter(f => f); // Only non-null files
+                    if (pictures.length > 0) {
+                        try {
+                            await ListingService.addListingPictures(response.id, pictures);
+                        } catch (imgErr) {
+                            console.error('Error uploading images:', imgErr);
+                            formMessage.textContent = 'Listing created, but image upload failed.';
+                            formMessage.style.color = 'orange';
+                            window.location.href = `/listing/${response.id}`;
+                            return;
+                        }
+                    }
+
                     formMessage.textContent = 'Listing created successfully!';
                     formMessage.style.color = 'green';
                     form.reset();
