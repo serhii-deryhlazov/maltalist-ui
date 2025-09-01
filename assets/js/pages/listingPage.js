@@ -234,6 +234,7 @@ export class ListingPage {
                 Description: document.getElementById('description').value,
                 Price: parseFloat(document.getElementById('price').value),
                 Category: document.getElementById('category').value || null,
+                Location: document.getElementById('location').value || null,
                 UserId: CacheService.get('current_user')?.id
             };
 
