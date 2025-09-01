@@ -30,8 +30,8 @@ export class ProfilePage {
                 history.pushState({}, '', `/profile/${currentUser.id}`);
                 if (navigateCallback) {
                     navigateCallback('My Profile');
+                    this.show(navigateCallback);
                 }
-                this.show();
             }
         });
 
@@ -52,7 +52,7 @@ export class ProfilePage {
         };
     }
 
-    async show(){
+    async show(navigateCallback){
         const userId = window.location.pathname.split('/')[2];
         const currentUser = CacheService.GetCurrentUser();
         const profile = await UserProfileService.getUserProfile(userId);
@@ -115,7 +115,7 @@ export class ProfilePage {
 
             $('#create').click(function(e) {
                 e.preventDefault();
-                loadContent('Create Listing');
+                navigateCallback('Create Listing');
                 history.pushState({}, '', '/create');
             });
             
