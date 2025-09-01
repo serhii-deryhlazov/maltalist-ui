@@ -11,9 +11,7 @@ class ListingService {
     pictures.forEach((file, idx) => {
       formData.append(`Picture${idx + 1}`, file);
     });
-    return await HttpService.post(`/api/Listings/${listingId}/pictures`, formData, {
-      headers: { 'Content-Type': 'multipart/form-data' }
-    });
+    return await HttpService.post(`/api/Listings/${listingId}/pictures`, formData);
   }
 
   static async getListingById(id) {
