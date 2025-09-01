@@ -96,7 +96,7 @@ export class ProfilePage {
                     profileDetailsHTML += `
                     <a class="profile-listing-link" href="/listing/${listing.id}">
                         <li class="profile-listing">
-                            // <img src="${pictures[0]}" alt="${listing.title}">
+                            
                             <div class="listing-info">
                                 <strong>${listing.title}</strong>
                                 <span>${listing.category || ''} | ${listing.price.toFixed(2)}€</span>
