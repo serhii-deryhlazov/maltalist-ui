@@ -6,9 +6,8 @@ export class ProfilePage {
 
     init(){
         const currentUser = CacheService.GetCurrentUser();
-        $('#profile').click((e) => { // Use arrow function to preserve `this` context
+        $('#profile').click((e) => {
             e.preventDefault();
-            history.pushState({}, '', `/profile/${currentUser.id}`);
 
             if (!currentUser || !currentUser.id) {
                 $('#content').html(`<div id="nouser"><h1>No User Logged In</h1>
@@ -28,7 +27,8 @@ export class ProfilePage {
                         data-logo_alignment="left">
                     </div></div>`);
             } else {
-                this.show(); // `this` now correctly refers to the ProfilePage instance
+                history.pushState({}, '', `/profile/${currentUser.id}`);
+                this.show();
             }
         });
 
