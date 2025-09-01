@@ -1,7 +1,6 @@
 import { UserProfileService } from '../services/userProfileService.js';
 import { CacheService } from '../services/cacheService.js';
 import { ListingService } from '../services/listingService.js';
-import { ListingPage } from './pages/listingPage.js';
 
 export class ProfilePage {
 
@@ -114,12 +113,11 @@ export class ProfilePage {
 
             document.getElementById('profile-details').innerHTML = profileDetailsHTML;
 
-            const listingPage = new ListingPage();
             const createBtn = document.getElementById('create');
             if (createBtn) {
                 createBtn.addEventListener('click', (e) => {
                     e.preventDefault();
-                    loadContent('Create Listing', () => listingPage.showCreate());
+                    loadContent('Create Listing', () => ListingPage.showCreate());
                     history.pushState({}, '', '/create');
                 });
             }
