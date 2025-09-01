@@ -4,13 +4,7 @@ import { ListingPage } from './pages/listingPage.js';
 
 export class PageLoader {
 
-    profilePage = new ProfilePage();
-    homePage = new HomePage();
-    listingPage = new ListingPage();
-
     init() {
-        this.profilePage.init(PageLoader.loadContent);
-        this.homePage.init();
         this.initRoutes();
     }
 
@@ -44,14 +38,19 @@ export class PageLoader {
     }
 
     initRoutes(){
+        const profilePage = new ProfilePage();
+        const homePage = new HomePage();
         const path = window.location.pathname;
+
         if (path.startsWith('/profile/')) {
+            profilePage.init(PageLoader.loadContent);
             PageLoader.loadContent('My Profile');
         } else if (path === '/create') {
             PageLoader.loadContent('Create Listing');
         } else if (path.startsWith('/listing/')) {
             PageLoader.loadContent('Listing Details');
         } else {
+            homePage.init();
             PageLoader.loadContent('Home');
         }
     }
