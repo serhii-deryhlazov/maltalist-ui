@@ -23,7 +23,7 @@ export class HomePage {
         searchButton.on('click', () => {
             params.search = searchInput.val().trim();
             params.page = 1; // Reset to first page
-            fetchListings();
+            fetchListings(params);
         });
     
         searchInput.on('keypress', (e) => {
@@ -42,12 +42,12 @@ export class HomePage {
                 
                 params.category = selectedCategory === 'all' ? null : selectedCategory;
                 params.page = 1;
-                fetchListings();
+                fetchListings(params);
             });
         });
     }
 
-    fetchListings() {
+    fetchListings(params) {
         const listingsContainer = $('#listing-list');
         listingsContainer.html('<p>Loading...</p>');
         ListingService.getAllListings(params)
