@@ -217,7 +217,7 @@ export class ListingPage {
                 for (let i = 0; i < 10; i++) {
                     const file = pictureFiles[i];
                     if (file) {
-                        const processedImage = ListingPage.processImage(file);
+                        const processedImage = await ListingPage.processImage(file);
                         pictureData[`Picture${i + 1}`] = processedImage;
                         count++;
                     }
