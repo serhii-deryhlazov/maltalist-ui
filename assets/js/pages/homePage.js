@@ -17,7 +17,7 @@ export class HomePage {
         tools.append(searchInput);
         tools.append(searchButton);
     
-        this.fetchListings();
+        this.fetchListings(params);
     
         // Search handler
         searchButton.on('click', () => {
