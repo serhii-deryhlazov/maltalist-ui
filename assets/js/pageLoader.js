@@ -4,11 +4,13 @@ import { ListingPage } from './pages/listingPage.js';
 
 export class PageLoader {
 
+    profilePage = new ProfilePage();
+    homePage = new HomePage();
+    listingPage = new ListingPage();
+
     init() {
-        const profilePage = new ProfilePage();
-        const homePage = new HomePage();
-        profilePage.init();
-        homePage.init();
+        this.profilePage.init();
+        this.homePage.init();
         this.initRoutes();
     }
 
@@ -26,13 +28,13 @@ export class PageLoader {
             }
             
             if (page === 'Home') {
-                HomePage.show();
+                this.homePage.show();
             } else if (page === 'Create Listing') {
-                ListingPage.showCreate();
+                this.listingPage.showCreate();
             } else if (page === 'My Profile') {
-                await ProfilePage.show();
+                await this.profilePage.show();
             } else if (page === 'Listing Details') {
-                await ListingPage.show();
+                await this.listingPage.show();
             }
         });
     }
