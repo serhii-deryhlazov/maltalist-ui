@@ -9,12 +9,12 @@ export class PageLoader {
     listingPage = new ListingPage();
 
     init() {
-        this.profilePage.init();
+        this.profilePage.init(PageLoader.loadContent);
         this.homePage.init();
         this.initRoutes();
     }
 
-    loadContent(page) {
+    static async loadContent(page) {
         const pageFile = page.toLowerCase().replace(' ', '-') + '.html';
         const pageUrl = `/pages/${pageFile}`;
         
@@ -27,14 +27,18 @@ export class PageLoader {
                 return;
             }
             
+            const homePage = new HomePage();
+            const profilePage = new ProfilePage();
+            const listingPage = new ListingPage();
+
             if (page === 'Home') {
-                this.homePage.show();
+                homePage.show();
             } else if (page === 'Create Listing') {
-                this.listingPage.showCreate();
+                listingPage.showCreate();
             } else if (page === 'My Profile') {
-                await this.profilePage.show();
+                await profilePage.show();
             } else if (page === 'Listing Details') {
-                await this.listingPage.show();
+                await listingPage.show();
             }
         });
     }
@@ -42,13 +46,13 @@ export class PageLoader {
     initRoutes(){
         const path = window.location.pathname;
         if (path.startsWith('/profile/')) {
-            this.loadContent('My Profile');
+            PageLoader.loadContent('My Profile');
         } else if (path === '/create') {
-            this.loadContent('Create Listing');
+            PageLoader.loadContent('Create Listing');
         } else if (path.startsWith('/listing/')) {
-            this.loadContent('Listing Details');
+            PageLoader.loadContent('Listing Details');
         } else {
-            this.loadContent('Home');
+            PageLoader.loadContent('Home');
         }
     }
 }

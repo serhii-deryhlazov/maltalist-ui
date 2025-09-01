@@ -4,7 +4,7 @@ import { ListingService } from '../services/listingService.js';
 
 export class ProfilePage {
 
-    init(){
+    init(navigateCallback) {
         const currentUser = CacheService.GetCurrentUser();
         $('#profile').click((e) => {
             e.preventDefault();
@@ -28,6 +28,9 @@ export class ProfilePage {
                     </div></div>`);
             } else {
                 history.pushState({}, '', `/profile/${currentUser.id}`);
+                if (navigateCallback) {
+                    navigateCallback('My Profile');
+                }
                 this.show();
             }
         });
