@@ -38,7 +38,7 @@ export class PageLoader {
             await profilePage.show(PageLoader.loadContent);
         } else if (path === '/create') {
             PageLoader.loadContent('Create Listing');
-            listingPage.showCreate();
+            await listingPage.showCreate();
         } else if (path.startsWith('/listing/')) {
             PageLoader.loadContent('Listing Details');
             await listingPage.show();
