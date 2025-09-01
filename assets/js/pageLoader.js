@@ -4,8 +4,8 @@ import { ListingPage } from './pages/listingPage.js';
 
 export class PageLoader {
 
-    init() {
-        this.initRoutes();
+    async init() {
+        await this.initRoutes();
     }
 
     static async loadContent(page) {
@@ -20,24 +20,12 @@ export class PageLoader {
                 $('#content').html(`<h1>Error loading ${page}</h1>`);
                 return;
             }
-            
-            const homePage = new HomePage();
-            const profilePage = new ProfilePage();
-            const listingPage = new ListingPage();
-
-            if (page === 'Home') {
-                homePage.show();
-            } else if (page === 'Create Listing') {
-                listingPage.showCreate();
-            } else if (page === 'My Profile') {
-                await profilePage.show();
-            } else if (page === 'Listing Details') {
-                await listingPage.show();
-            }
         });
     }
 
-    initRoutes(){
+    async initRoutes(){
+        const listingPage = new ListingPage();
+
         const profilePage = new ProfilePage();
         profilePage.init(PageLoader.loadContent);
 
@@ -47,12 +35,16 @@ export class PageLoader {
         const path = window.location.pathname;
         if (path.startsWith('/profile/')) {
             PageLoader.loadContent('My Profile');
+            await profilePage.show(PageLoader.loadContent);
         } else if (path === '/create') {
             PageLoader.loadContent('Create Listing');
+            listingPage.showCreate();
         } else if (path.startsWith('/listing/')) {
             PageLoader.loadContent('Listing Details');
+            await listingPage.show();
         } else {
             PageLoader.loadContent('Home');
+            homePage.show();
         }
     }
 }
