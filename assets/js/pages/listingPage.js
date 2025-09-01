@@ -485,10 +485,8 @@ export class ListingPage {
                     canvas.height = height;
                     ctx.drawImage(img, 0, 0, width, height);
 
-                    // ✅ Convert canvas back to Blob instead of Base64 string
                     canvas.toBlob((blob) => {
                         if (blob) {
-                            // wrap it as File so it keeps a name
                             resolve(new File([blob], file.name, { type: "image/jpeg" }));
                         } else {
                             reject(new Error("Image processing failed."));

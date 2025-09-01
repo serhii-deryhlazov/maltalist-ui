@@ -23,16 +23,24 @@ class HttpService {
     static async post(endpoint, data) {
       try {
         const url = `${Config.API_BASE_URL}${endpoint}`;
-        const response = await fetch(url, {
+
+        let options = {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(data)
-        });
+        };
+
+        if (data instanceof FormData) {
+          options.body = data;
+        } else {
+          options.headers = { 'Content-Type': 'application/json' };
+          options.body = JSON.stringify(data);
+        }
+
+        const response = await fetch(url, options);
+
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
+
         return await response.json();
       } catch (error) {
         console.error('POST request failed:', error);
