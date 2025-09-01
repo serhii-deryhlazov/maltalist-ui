@@ -8,7 +8,7 @@ export class PageLoader {
         await this.initRoutes();
     }
 
-    static async loadContent(page) {
+    static async loadContent(page, callback) {
         const pageFile = page.toLowerCase().replace(' ', '-') + '.html';
         const pageUrl = `/pages/${pageFile}`;
         
@@ -19,6 +19,18 @@ export class PageLoader {
                 console.error(`Failed to load ${pageUrl}: ${xhr.status} ${xhr.statusText}`);
                 $('#content').html(`<h1>Error loading ${page}</h1>`);
                 return;
+            }
+        });
+
+        $('#content').load(pageUrl, async (response, status, xhr) => {
+            if (status === 'error') {
+                console.error(`Failed to load ${pageUrl}: ${xhr.status} ${xhr.statusText}`);
+                $('#content').html(`<h1>Error loading ${page}</h1>`);
+                return;
+            }
+            
+            if (callback && typeof callback === 'function') {
+                callback();
             }
         });
     }
@@ -34,17 +46,13 @@ export class PageLoader {
 
         const path = window.location.pathname;
         if (path.startsWith('/profile/')) {
-            PageLoader.loadContent('My Profile');
-            await profilePage.show(PageLoader.loadContent);
+            PageLoader.loadContent('My Profile', async () => await profilePage.show(PageLoader.loadContent));
         } else if (path === '/create') {
-            PageLoader.loadContent('Create Listing');
-            await listingPage.showCreate();
+            PageLoader.loadContent('Create Listing', () => listingPage.showCreate());
         } else if (path.startsWith('/listing/')) {
-            PageLoader.loadContent('Listing Details');
-            await listingPage.show();
+            PageLoader.loadContent('Listing Details', async () => await listingPage.show());
         } else {
-            PageLoader.loadContent('Home');
-            homePage.show();
+            PageLoader.loadContent('Home', () => homePage.show());
         }
     }
 }
