@@ -9,7 +9,7 @@ class CacheService {
     }
 
     static GetCurrentUser() {
-        return get('current_user');
+        return this.get('current_user');
     }
 
     static remove(key) {

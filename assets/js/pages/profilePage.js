@@ -134,7 +134,7 @@ export class ProfilePage {
                         e.preventDefault();
                         const newName = document.getElementById('name').value;
                         const newPhoneNumber = document.getElementById('phoneNumber').value;
-                        const currentUser = CacheService.get("current_user");
+                        const currentUser = CacheService.GetCurrentUser();
                         currentUser.userName = newName;
                         currentUser.phoneNumber = newPhoneNumber;
                         CacheService.set("current_user", currentUser);
