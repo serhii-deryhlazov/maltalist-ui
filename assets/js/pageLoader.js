@@ -41,7 +41,7 @@ export class PageLoader {
         const profilePage = new ProfilePage();
         profilePage.init(PageLoader.loadContent);
         const homePage = new HomePage();
-        homePage.init();
+        homePage.init(PageLoader.loadContent);
 
         const path = window.location.pathname;
 

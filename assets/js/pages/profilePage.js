@@ -4,7 +4,7 @@ import { ListingService } from '../services/listingService.js';
 
 export class ProfilePage {
 
-    init(navigateCallback) {
+    init(loadContent) {
         const currentUser = CacheService.GetCurrentUser();
         $('#profile').click((e) => {
             e.preventDefault();
@@ -28,9 +28,9 @@ export class ProfilePage {
                     </div></div>`);
             } else {
                 history.pushState({}, '', `/profile/${currentUser.id}`);
-                if (navigateCallback) {
-                    navigateCallback('My Profile');
-                    this.show(navigateCallback);
+                if (loadContent) {
+                    loadContent('My Profile');
+                    this.show(loadContent);
                 }
             }
         });
@@ -52,7 +52,7 @@ export class ProfilePage {
         };
     }
 
-    async show(navigateCallback){
+    async show(loadContent){
         const userId = window.location.pathname.split('/')[2];
         const currentUser = CacheService.GetCurrentUser();
         const profile = await UserProfileService.getUserProfile(userId);
@@ -115,7 +115,7 @@ export class ProfilePage {
 
             $('#create').click(function(e) {
                 e.preventDefault();
-                navigateCallback('Create Listing');
+                loadContent('Create Listing');
                 history.pushState({}, '', '/create');
             });
             

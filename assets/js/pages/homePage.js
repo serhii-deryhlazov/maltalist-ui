@@ -2,10 +2,10 @@ import { ListingService } from '/assets/js/services/listingService.js';
 
 export class HomePage {
 
-    init(){
+    init(loadContent){
         $('#home').click(function(e) {
             e.preventDefault();
-            this.loadContent('Home');
+            loadContent('Home');
             history.pushState({}, '', '/');
         });
     }
