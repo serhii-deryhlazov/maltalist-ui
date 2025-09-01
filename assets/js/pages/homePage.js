@@ -50,50 +50,57 @@ export class HomePage {
     fetchListings(params) {
         const listingsContainer = $('#listing-list');
         listingsContainer.html('<p>Loading...</p>');
+
         ListingService.getAllListings(params)
-            .then(response => {
-                const { listings, totalNumber, page } = response;
-                let listingsHtml = '<ul>';
-                listings.forEach(listing => {
-                    const pictures = ListingService.getListingPictures(listing.id);
-                    listingsHtml += `
-                        <li>
-                            <a href="/listing/${listing.id}">
-                                <img src="${pictures[0]}" alt="${listing.title}">
-                                <div>
-                                    <h3>${listing.title}</h3>
-                                    <p>${listing.description ? listing.description.substring(0, 100) + '...' : 'No description available'}</p>
-                                    <p>${listing.price.toFixed(2)} EUR</p>
-                                </div>
-                            </a>
-                        </li>
-                    `;
-                });
-                listingsHtml += '</ul>';
+        .then(async response => {
+            const { listings, totalNumber, page } = response;
 
-                // Pagination
-                const totalPages = Math.ceil(totalNumber / params.limit);
-                let paginationHtml = '<div class="pagination">';
-                if (page > 1) {
-                    paginationHtml += `<button class="page-btn" data-page="${page - 1}">Previous</button>`;
-                }
-                paginationHtml += `<span>Page ${page} of ${totalPages}</span>`;
-                if (page < totalPages) {
-                    paginationHtml += `<button class="page-btn" data-page="${page + 1}">Next</button>`;
-                }
-                paginationHtml += '</div>';
+            const picturesList = await Promise.all(
+                listings.map(l => ListingService.getListingPictures(l.id))
+            );
 
-                listingsContainer.html(listingsHtml + paginationHtml);
-
-                // Pagination buttons
-                $('.page-btn').on('click', function() {
-                    params.page = parseInt($(this).data('page'));
-                    fetchListings();
-                });
-            })
-            .catch(error => {
-                console.error("Error loading listings:", error);
-                listingsContainer.html('<p>Error loading listings</p>');
+            let listingsHtml = '<ul>';
+            listings.forEach((listing, idx) => {
+                const pictures = picturesList[idx];
+                listingsHtml += `
+                    <li>
+                        <a href="/listing/${listing.id}">
+                            <img src="${pictures[0]}" alt="${listing.title}">
+                            <div>
+                                <h3>${listing.title}</h3>
+                                <p>${listing.description ? listing.description.substring(0, 100) + '...' : 'No description available'}</p>
+                                <p>${listing.price.toFixed(2)} EUR</p>
+                            </div>
+                        </a>
+                    </li>
+                `;
             });
+            listingsHtml += '</ul>';
+
+            // Pagination
+            const totalPages = Math.ceil(totalNumber / params.limit);
+            let paginationHtml = '<div class="pagination">';
+            if (page > 1) {
+                paginationHtml += `<button class="page-btn" data-page="${page - 1}">Previous</button>`;
+            }
+            paginationHtml += `<span>Page ${page} of ${totalPages}</span>`;
+            if (page < totalPages) {
+                paginationHtml += `<button class="page-btn" data-page="${page + 1}">Next</button>`;
+            }
+            paginationHtml += '</div>';
+
+            listingsContainer.html(listingsHtml + paginationHtml);
+
+            // Pagination buttons
+            $('.page-btn').on('click', function() {
+                params.page = parseInt($(this).data('page'));
+                fetchListings(params);
+            });
+        })
+        .catch(error => {
+            console.error("Error loading listings:", error);
+            listingsContainer.html('<p>Error loading listings</p>');
+        });
     }
+
 }
