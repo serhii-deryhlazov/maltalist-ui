@@ -46,7 +46,7 @@ export class PageLoader {
 
         const path = window.location.pathname;
         if (path.startsWith('/profile/')) {
-            PageLoader.loadContent('My Profile', async () => await profilePage.show(PageLoader.loadContent));
+            PageLoader.loadContent('My Profile', async () => await profilePage.show(PageLoader.loadContent, listingPage.showCreate()));
         } else if (path === '/create') {
             PageLoader.loadContent('Create Listing', () => listingPage.showCreate());
         } else if (path.startsWith('/listing/')) {
