@@ -463,11 +463,6 @@ export class ListingPage {
 
     static async processImage(file) {
         return new Promise((resolve, reject) => {
-            if (!file) {
-                reject(new Error("No file provided."));
-                return;
-            }
-
             const reader = new FileReader();
             reader.onload = (readerEvent) => {
                 const img = new Image();
@@ -475,47 +470,35 @@ export class ListingPage {
                     const canvas = document.createElement('canvas');
                     const ctx = canvas.getContext('2d');
 
-                    // Set maximum dimensions for the processed image
-                    const MAX_WIDTH = 800;
-                    const MAX_HEIGHT = 800;
+                    const MAX_WIDTH = 800, MAX_HEIGHT = 800;
+                    let width = img.width, height = img.height;
 
-                    let width = img.width;
-                    let height = img.height;
-
-                    // Calculate new dimensions while maintaining aspect ratio
-                    if (width > height) {
-                        if (width > MAX_WIDTH) {
-                            height *= MAX_WIDTH / width;
-                            width = MAX_WIDTH;
-                        }
-                    } else {
-                        if (height > MAX_HEIGHT) {
-                            width *= MAX_HEIGHT / height;
-                            height = MAX_HEIGHT;
-                        }
+                    if (width > height && width > MAX_WIDTH) {
+                        height *= MAX_WIDTH / width;
+                        width = MAX_WIDTH;
+                    } else if (height > MAX_HEIGHT) {
+                        width *= MAX_HEIGHT / height;
+                        height = MAX_HEIGHT;
                     }
 
-                    // Set canvas dimensions
                     canvas.width = width;
                     canvas.height = height;
-
-                    // Draw the image to the canvas
                     ctx.drawImage(img, 0, 0, width, height);
 
-                    // Convert the canvas content to a JPEG data URL with 0.7 quality
-                    const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
-                    
-                    // Resolve the promise with the Base64 string
-                    resolve(dataUrl);
+                    // ✅ Convert canvas back to Blob instead of Base64 string
+                    canvas.toBlob((blob) => {
+                        if (blob) {
+                            // wrap it as File so it keeps a name
+                            resolve(new File([blob], file.name, { type: "image/jpeg" }));
+                        } else {
+                            reject(new Error("Image processing failed."));
+                        }
+                    }, "image/jpeg", 0.7);
                 };
-                img.onerror = (err) => {
-                    reject(new Error("Failed to load image from file."));
-                };
+                img.onerror = () => reject(new Error("Failed to load image."));
                 img.src = readerEvent.target.result;
             };
-            reader.onerror = (err) => {
-                reject(new Error("Failed to read file."));
-            };
+            reader.onerror = () => reject(new Error("Failed to read file."));
             reader.readAsDataURL(file);
         });
     }
