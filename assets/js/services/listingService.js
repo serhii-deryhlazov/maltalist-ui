@@ -37,6 +37,10 @@ class ListingService {
   static async getUserListings(userId) {
     return await HttpService.get(`/api/Listings/${userId}/listings`);
   }
+
+  static async getListingPictures(id) {
+    return await HttpService.get(`/api/Listings/${userId}/pictures`);
+  }
 }
 
 export { ListingService };
