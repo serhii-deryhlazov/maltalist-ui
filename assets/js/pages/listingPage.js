@@ -83,7 +83,7 @@ export class ListingPage {
         }
     }
 
-    static showCreate(){
+    showCreate(){
         const form = document.getElementById('create-listing-form');
         const pictureInputsDiv = document.getElementById('picture-inputs');
         const pictureFiles = Array(10).fill(null);

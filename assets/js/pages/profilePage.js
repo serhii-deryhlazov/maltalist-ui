@@ -117,7 +117,199 @@ export class ProfilePage {
             if (createBtn) {
                 createBtn.addEventListener('click', (e) => {
                     e.preventDefault();
-                    loadContent('Create Listing', () => ListingPage.showCreate());
+                    loadContent('Create Listing', () => {
+                        const form = document.getElementById('create-listing-form');
+                        const pictureInputsDiv = document.getElementById('picture-inputs');
+                        const pictureFiles = Array(10).fill(null);
+
+                        // Generate 10 file inputs and preview containers
+                        pictureInputsDiv.innerHTML = '';
+                        for (let i = 0; i < 10; i++) {
+                            const wrapper = document.createElement('div');
+                            wrapper.style.position = 'relative';
+                            wrapper.style.width = '300px';
+                            wrapper.style.height = '300px';
+                            wrapper.style.display = 'flex';
+                            wrapper.style.alignItems = 'center';
+                            wrapper.style.justifyContent = 'center';
+
+                            const input = document.createElement('input');
+                            input.type = 'file';
+                            input.accept = 'image/*';
+                            input.style.display = 'none';
+                            input.dataset.idx = i;
+
+                            const preview = document.createElement('div');
+                            preview.style.width = '300px';
+                            preview.style.height = '300px';
+                            preview.style.display = 'flex';
+                            preview.style.alignItems = 'center';
+                            preview.style.justifyContent = 'center';
+                            preview.style.background = '#f9fafb';
+                            preview.style.border = '2px dashed #bfc9d9';
+                            preview.style.borderRadius = '8px';
+                            preview.style.cursor = 'pointer';
+                            preview.style.position = 'relative';
+                            preview.style.overflow = 'hidden';
+                            preview.style.transition = 'border 0.2s';
+
+                            const plus = document.createElement('span');
+                            plus.textContent = '+';
+                            plus.style.fontSize = '2.5rem';
+                            plus.style.color = '#bfc9d9';
+                            plus.style.position = 'absolute';
+                            plus.style.left = '50%';
+                            plus.style.top = '50%';
+                            plus.style.transform = 'translate(-50%, -50%)';
+                            plus.style.pointerEvents = 'none';
+
+                            const img = document.createElement('img');
+                            img.style.display = 'none';
+                            img.style.width = '100%';
+                            img.style.height = '100%';
+                            img.style.objectFit = 'cover';
+                            img.style.borderRadius = '8px';
+                            img.style.position = 'absolute';
+                            img.style.top = '0';
+                            img.style.left = '0';
+
+                            const delBtn = document.createElement('button');
+                            delBtn.type = 'button';
+                            delBtn.textContent = '✕';
+                            delBtn.style.position = 'absolute';
+                            delBtn.style.top = '2px';
+                            delBtn.style.right = '2px';
+                            delBtn.style.background = 'rgba(0,0,0,0.6)';
+                            delBtn.style.color = 'white';
+                            delBtn.style.border = 'none';
+                            delBtn.style.borderRadius = '50%';
+                            delBtn.style.width = '22px';
+                            delBtn.style.height = '22px';
+                            delBtn.style.cursor = 'pointer';
+                            delBtn.style.display = 'none';
+                            delBtn.style.zIndex = '2';
+
+                            preview.addEventListener('click', () => input.click());
+
+                            // Handle file input change
+                            input.addEventListener('change', function() {
+                                const idx = parseInt(this.dataset.idx);
+                                if (this.files && this.files[0]) {
+                                    const file = this.files[0];
+                                    if (!file.type.startsWith('image/')) {
+                                        alert('Only image files are allowed.');
+                                        this.value = '';
+                                        img.style.display = 'none';
+                                        plus.style.display = 'block';
+                                        delBtn.style.display = 'none';
+                                        pictureFiles[idx] = null;
+                                        preview.style.border = '2px dashed #bfc9d9';
+                                        return;
+                                    }
+                                    img.src = URL.createObjectURL(file);
+                                    img.style.display = 'block';
+                                    plus.style.display = 'none';
+                                    delBtn.style.display = 'block';
+                                    pictureFiles[idx] = file;
+                                    preview.style.border = '2px solid #4f8cff';
+                                } else {
+                                    img.style.display = 'none';
+                                    plus.style.display = 'block';
+                                    delBtn.style.display = 'none';
+                                    pictureFiles[idx] = null;
+                                    preview.style.border = '2px dashed #bfc9d9';
+                                }
+                            });
+
+                            // Handle delete button
+                            delBtn.addEventListener('click', function(e) {
+                                e.stopPropagation();
+                                input.value = '';
+                                img.style.display = 'none';
+                                plus.style.display = 'block';
+                                delBtn.style.display = 'none';
+                                pictureFiles[i] = null;
+                                preview.style.border = '2px dashed #bfc9d9';
+                            });
+
+                            preview.appendChild(img);
+                            preview.appendChild(plus);
+                            wrapper.appendChild(input);
+                            wrapper.appendChild(preview);
+                            wrapper.appendChild(delBtn);
+                            pictureInputsDiv.appendChild(wrapper);
+                        }
+
+                        form.addEventListener('submit', async (e) => {
+                            e.preventDefault();
+                            const formMessage = document.getElementById('form-message');
+                            formMessage.textContent = '';
+
+                            const pictureData = {};
+                            try {
+                                let count = 0;
+                                for (let i = 0; i < 10; i++) {
+                                    const file = pictureFiles[i];
+                                    if (file) {
+                                        const processedImage = ProfilePage.processImage(file);
+                                        pictureData[`Picture${i + 1}`] = processedImage;
+                                        count++;
+                                    }
+                                }
+                            } catch (error) {
+                                console.error('Image processing error:', error);
+                                formMessage.textContent = 'Error processing images.';
+                                formMessage.style.color = 'red';
+                                return;
+                            }
+
+                            const data = {
+                                Title: document.getElementById('name').value,
+                                Description: document.getElementById('description').value,
+                                Price: parseFloat(document.getElementById('price').value),
+                                Category: document.getElementById('category').value || null,
+                                Location: document.getElementById('location').value || null,
+                                UserId: CacheService.get('current_user')?.id
+                            };
+
+                            try {
+                                const response = await ListingService.createListing(data);
+                                if (response && response.id) {
+                                    
+                                    const pictures = pictureFiles.filter(f => f); // Only non-null files
+                                    if (pictures.length > 0) {
+                                        try {
+                                            await ListingService.addListingPictures(response.id, pictures);
+                                        } catch (imgErr) {
+                                            console.error('Error uploading images:', imgErr);
+                                            formMessage.textContent = 'Listing created, but image upload failed.';
+                                            formMessage.style.color = 'orange';
+                                            window.location.href = `/listing/${response.id}`;
+                                            return;
+                                        }
+                                    }
+
+                                    formMessage.textContent = 'Listing created successfully!';
+                                    formMessage.style.color = 'green';
+                                    form.reset();
+                                    // Clear previews and files
+                                    Array.from(pictureInputsDiv.querySelectorAll('img')).forEach(img => img.style.display = 'none');
+                                    Array.from(pictureInputsDiv.querySelectorAll('button')).forEach(btn => btn.style.display = 'none');
+                                    pictureFiles.fill(null);
+                                    if (response.id) {
+                                        window.location.href = `/listing/${response.id}`;
+                                    }
+                                } else {
+                                    formMessage.textContent = 'Failed to create listing. Please try again.';
+                                    formMessage.style.color = 'red';
+                                }
+                            } catch (error) {
+                                console.error('Create listing error:', error);
+                                formMessage.textContent = 'Error creating listing.';
+                                formMessage.style.color = 'red';
+                            }
+                        });
+                    });
                     history.pushState({}, '', '/create');
                 });
             }
@@ -161,5 +353,64 @@ export class ProfilePage {
         } else {
             document.getElementById('profile-details').innerHTML = '<p>Profile not found.</p>';
         }
+    }
+
+    static async processImage(file) {
+        return new Promise((resolve, reject) => {
+            if (!file) {
+                reject(new Error("No file provided."));
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = (readerEvent) => {
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+
+                    // Set maximum dimensions for the processed image
+                    const MAX_WIDTH = 800;
+                    const MAX_HEIGHT = 800;
+
+                    let width = img.width;
+                    let height = img.height;
+
+                    // Calculate new dimensions while maintaining aspect ratio
+                    if (width > height) {
+                        if (width > MAX_WIDTH) {
+                            height *= MAX_WIDTH / width;
+                            width = MAX_WIDTH;
+                        }
+                    } else {
+                        if (height > MAX_HEIGHT) {
+                            width *= MAX_HEIGHT / height;
+                            height = MAX_HEIGHT;
+                        }
+                    }
+
+                    // Set canvas dimensions
+                    canvas.width = width;
+                    canvas.height = height;
+
+                    // Draw the image to the canvas
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    // Convert the canvas content to a JPEG data URL with 0.7 quality
+                    const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
+                    
+                    // Resolve the promise with the Base64 string
+                    resolve(dataUrl);
+                };
+                img.onerror = (err) => {
+                    reject(new Error("Failed to load image from file."));
+                };
+                img.src = readerEvent.target.result;
+            };
+            reader.onerror = (err) => {
+                reject(new Error("Failed to read file."));
+            };
+            reader.readAsDataURL(file);
+        });
     }
 }
