@@ -2,7 +2,8 @@ import { PageLoader } from "./pageLoader.js";
 
 $(document).ready(function() {
     
-    PageLoader.init();
+    const pageLoader = new PageLoader();
+    pageLoader.init();
     
     async function resizeAndConvertToBase64(file, maxSize, quality) {
         return new Promise((resolve, reject) => {
