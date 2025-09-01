@@ -39,13 +39,16 @@ export class PageLoader {
 
     initRoutes(){
         const profilePage = new ProfilePage();
+        console.log("Initializing profile page");
         profilePage.init(PageLoader.loadContent);
         const homePage = new HomePage();
+        console.log("Initializing home page");
         homePage.init(PageLoader.loadContent);
 
         const path = window.location.pathname;
 
         if (path.startsWith('/profile/')) {
+            console.log("Loading profile page for path:", path);
             PageLoader.loadContent('My Profile');
         } else if (path === '/create') {
             PageLoader.loadContent('Create Listing');
