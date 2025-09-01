@@ -113,11 +113,14 @@ export class ProfilePage {
 
             document.getElementById('profile-details').innerHTML = profileDetailsHTML;
 
-            $('#create').click(function(e) {
-                e.preventDefault();
-                loadContent('Create Listing');
-                history.pushState({}, '', '/create');
-            });
+            const createBtn = document.getElementById('create');
+            if (createBtn) {
+                createBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    loadContent('Create Listing');
+                    history.pushState({}, '', '/create');
+                });
+            }
             
             const editProfileBtn = document.getElementById('edit-profile-btn');
             if (editProfileBtn) {
