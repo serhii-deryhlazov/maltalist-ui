@@ -92,11 +92,11 @@ export class ProfilePage {
             if (myListings && myListings.length > 0) {
                 profileDetailsHTML += `<h3>Listings</h3><ul id="my-listings">`;
                 myListings.forEach(listing => async () => {
-                    const pictures = await ListingService.getListingPictures(listing.id);
+                    // const pictures = await ListingService.getListingPictures(listing.id);
                     profileDetailsHTML += `
                     <a class="profile-listing-link" href="/listing/${listing.id}">
                         <li class="profile-listing">
-                            <img src="${pictures[0]}" alt="${listing.title}">
+                            // <img src="${pictures[0]}" alt="${listing.title}">
                             <div class="listing-info">
                                 <strong>${listing.title}</strong>
                                 <span>${listing.category || ''} | ${listing.price.toFixed(2)}€</span>
