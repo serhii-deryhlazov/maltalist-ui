@@ -117,7 +117,7 @@ export class ProfilePage {
             if (createBtn) {
                 createBtn.addEventListener('click', (e) => {
                     e.preventDefault();
-                    loadContent('Create Listing', () => showCreate);
+                    loadContent('Create Listing', () => showCreate());
                     history.pushState({}, '', '/create');
                 });
             }
