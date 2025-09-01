@@ -8,6 +8,7 @@ export class HomePage {
             this.loadContent('Home');
             history.pushState({}, '', '/');
         });
+        this.loadContent('Home');
     }
 
     show(params = { page: 1, limit: 9 }) {

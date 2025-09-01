@@ -1,6 +1,6 @@
-import { HomePage } from '/assets/js/services/pages/homePage.js';
-import { ProfilePage } from '/assets/js/services/pages/profilePage.js';
-import { ListingPage } from '/assets/js/services/pages/listingPage.js';
+import { HomePage } from './pages/homePage.js';
+import { ProfilePage } from './pages/profilePage.js';
+import { ListingPage } from './pages/listingPage.js';
 
 export class PageLoader {
 

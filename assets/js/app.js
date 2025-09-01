@@ -1,4 +1,4 @@
-import { PageLoader } from "/assets/js/pageLoader.js";
+import { PageLoader } from "./pageLoader.js";
 
 $(document).ready(function() {
     
