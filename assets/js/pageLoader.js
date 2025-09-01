@@ -20,7 +20,7 @@ export class PageLoader {
         
         $('#content').html(`<h1>Loading ${page}...</h1>`);
         
-        $('#content').load(pageUrl, async function(response, status, xhr) {
+        $('#content').load(pageUrl, async (response, status, xhr) => {
             if (status === 'error') {
                 console.error(`Failed to load ${pageUrl}: ${xhr.status} ${xhr.statusText}`);
                 $('#content').html(`<h1>Error loading ${page}</h1>`);
