@@ -5,13 +5,12 @@ import { ListingService } from '../services/listingService.js';
 export class ProfilePage {
 
     init(){
-        const currentUser = CacheService.get("current_user");
+        const currentUser = CacheService.GetCurrentUser();
         $('#profile').click(function(e) {
             e.preventDefault();
-            if (currentUser && currentUser.id) {
-                this.show();
-                history.pushState({}, '', `/profile/${currentUser.id}`);
-            } else {
+            history.pushState({}, '', `/profile/${currentUser.id}`);
+
+            if (!currentUser || !currentUser.id) {
                 $('#content').html(`<div id="nouser"><h1>No User Logged In</h1>
                     <script src="https://accounts.google.com/gsi/client" async defer></script>
                     <div id="g_id_onload"
@@ -28,6 +27,8 @@ export class ProfilePage {
                         data-size="large"
                         data-logo_alignment="left">
                     </div></div>`);
+            }else{
+                this.show();
             }
         });
 
@@ -50,7 +51,7 @@ export class ProfilePage {
 
     async show(){
         const userId = window.location.pathname.split('/')[2];
-        const currentUser = JSON.parse(localStorage.getItem('current_user'));
+        const currentUser = CacheService.GetCurrentUser();
         const profile = await UserProfileService.getUserProfile(userId);
 
         if (profile) {

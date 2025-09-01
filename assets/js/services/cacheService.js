@@ -8,6 +8,10 @@ class CacheService {
         return value ? JSON.parse(value) : null;
     }
 
+    static GetCurrentUser() {
+        return get('current_user');
+    }
+
     static remove(key) {
         localStorage.removeItem(key);
     }
