@@ -39,7 +39,7 @@ class ListingService {
   }
 
   static async getListingPictures(id) {
-    return await HttpService.get(`/api/Listings/${userId}/pictures`);
+    return await HttpService.get(`/api/Listings/${id}/pictures`);
   }
 }
 
