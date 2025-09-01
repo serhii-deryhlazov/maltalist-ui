@@ -12,13 +12,7 @@ export class ListingPage {
         try {
             const listing = await ListingService.getListingById(listingId);
             if (listing) {
-                let pictures = [];
-                for (let i = 1; i <= 10; i++) {
-                    const pictureKey = `picture${i}`;
-                    if (listing[pictureKey]) {
-                        pictures.push(listing[pictureKey]);
-                    }
-                }
+                let pictures = await ListingService.getListingPictures(listingId);
 
                 let carouselHtml = '';
                 if (pictures.length > 0) {
