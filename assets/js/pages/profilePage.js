@@ -9,7 +9,7 @@ export class ProfilePage {
         $('#profile').click(function(e) {
             e.preventDefault();
             if (currentUser && currentUser.id) {
-                this.loadContent('My Profile');
+                this.show();
                 history.pushState({}, '', `/profile/${currentUser.id}`);
             } else {
                 $('#content').html(`<div id="nouser"><h1>No User Logged In</h1>
