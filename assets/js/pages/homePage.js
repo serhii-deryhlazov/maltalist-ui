@@ -55,11 +55,11 @@ export class HomePage {
                 const { listings, totalNumber, page } = response;
                 let listingsHtml = '<ul>';
                 listings.forEach(listing => {
-                    const picture = listing.picture1 || 'https://via.placeholder.com/100';
+                    const pictures = ListingService.getListingPictures(listing.id);
                     listingsHtml += `
                         <li>
                             <a href="/listing/${listing.id}">
-                                <img src="${picture}" alt="${listing.title}">
+                                <img src="${pictures[0]}" alt="${listing.title}">
                                 <div>
                                     <h3>${listing.title}</h3>
                                     <p>${listing.description ? listing.description.substring(0, 100) + '...' : 'No description available'}</p>
