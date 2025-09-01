@@ -5,8 +5,10 @@ import { ListingPage } from './pages/listingPage.js';
 export class PageLoader {
 
     init() {
-        ProfilePage.init();
-        HomePage.init();
+        const profilePage = new ProfilePage();
+        const homePage = new HomePage();
+        profilePage.init();
+        homePage.init();
         this.initRoutes();
     }
 
