@@ -217,8 +217,8 @@ export class ListingPage {
                 for (let i = 0; i < 10; i++) {
                     const file = pictureFiles[i];
                     if (file) {
-                        const base64String = await resizeAndConvertToBase64(file, 800, 0.7);
-                        pictureData[`Picture${i + 1}`] = base64String;
+                        const processedImage = ListingPage.processImage(file);
+                        pictureData[`Picture${i + 1}`] = processedImage;
                         count++;
                     }
                 }
@@ -457,6 +457,65 @@ export class ListingPage {
                 editFormMessage.textContent = 'Error updating listing.';
                 editFormMessage.style.color = 'red';
             }
+        });
+    }
+
+    static async processImage(file) {
+        return new Promise((resolve, reject) => {
+            if (!file) {
+                reject(new Error("No file provided."));
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = (readerEvent) => {
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+
+                    // Set maximum dimensions for the processed image
+                    const MAX_WIDTH = 800;
+                    const MAX_HEIGHT = 800;
+
+                    let width = img.width;
+                    let height = img.height;
+
+                    // Calculate new dimensions while maintaining aspect ratio
+                    if (width > height) {
+                        if (width > MAX_WIDTH) {
+                            height *= MAX_WIDTH / width;
+                            width = MAX_WIDTH;
+                        }
+                    } else {
+                        if (height > MAX_HEIGHT) {
+                            width *= MAX_HEIGHT / height;
+                            height = MAX_HEIGHT;
+                        }
+                    }
+
+                    // Set canvas dimensions
+                    canvas.width = width;
+                    canvas.height = height;
+
+                    // Draw the image to the canvas
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    // Convert the canvas content to a JPEG data URL with 0.7 quality
+                    const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
+                    
+                    // Resolve the promise with the Base64 string
+                    resolve(dataUrl);
+                };
+                img.onerror = (err) => {
+                    reject(new Error("Failed to load image from file."));
+                };
+                img.src = readerEvent.target.result;
+            };
+            reader.onerror = (err) => {
+                reject(new Error("Failed to read file."));
+            };
+            reader.readAsDataURL(file);
         });
     }
 }
