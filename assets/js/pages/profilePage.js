@@ -91,7 +91,7 @@ export class ProfilePage {
             const myListings = await ListingService.getUserListings(userId);
             if (myListings && myListings.length > 0) {
                 profileDetailsHTML += `<h3>Listings</h3><ul id="my-listings">`;
-                myListings.forEach(listing => async () => {
+                myListings.forEach(listing => {
                     // const pictures = await ListingService.getListingPictures(listing.id);
                     profileDetailsHTML += `
                     <a class="profile-listing-link" href="/listing/${listing.id}">
