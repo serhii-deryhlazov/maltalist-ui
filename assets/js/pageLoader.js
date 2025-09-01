@@ -40,14 +40,6 @@ export class PageLoader {
     initRoutes(){
         const profilePage = new ProfilePage();
         profilePage.init(PageLoader.loadContent);
-        const createBtn = document.getElementById('create');
-        if (createBtn) {
-            createBtn.addEventListener('click', (e) => {
-                e.preventDefault();
-                PageLoader.loadContent('Create Listing');
-                history.pushState({}, '', '/create');
-            });
-        }
 
         const homePage = new HomePage();
         homePage.init(PageLoader.loadContent);

@@ -28,8 +28,10 @@ export class ProfilePage {
                     </div></div>`);
             } else {
                 history.pushState({}, '', `/profile/${currentUser.id}`);
-                loadContent('My Profile');
-                this.show();
+                if (loadContent) {
+                    loadContent('My Profile');
+                    this.show(loadContent);
+                }
             }
         });
 
@@ -50,7 +52,7 @@ export class ProfilePage {
         };
     }
 
-    async show(){
+    async show(loadContent){
         const userId = window.location.pathname.split('/')[2];
         const currentUser = CacheService.GetCurrentUser();
         const profile = await UserProfileService.getUserProfile(userId);
@@ -110,6 +112,15 @@ export class ProfilePage {
             profileDetailsHTML += '</div>';
 
             document.getElementById('profile-details').innerHTML = profileDetailsHTML;
+
+            const createBtn = document.getElementById('create');
+            if (createBtn) {
+                createBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    loadContent('Create Listing');
+                    history.pushState({}, '', '/create');
+                });
+            }
             
             const editProfileBtn = document.getElementById('edit-profile-btn');
             if (editProfileBtn) {
