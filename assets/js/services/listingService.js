@@ -11,7 +11,15 @@ class ListingService {
     pictures.forEach((file, idx) => {
       formData.append(`Picture${idx + 1}`, file);
     });
-    return await HttpService.post(`/api/Listings/${listingId}/pictures`, formData);
+    return await HttpService.post(`/api/pictures/${listingId}`, formData);
+  }
+
+  static async updateListingPictures(listingId, pictures) {
+    const formData = new FormData();
+    pictures.forEach((file, idx) => {
+      formData.append(`Picture${idx + 1}`, file);
+    });
+    return await HttpService.put(`/api/pictures/${listingId}`, formData);
   }
 
   static async getListingById(id) {
@@ -39,7 +47,7 @@ class ListingService {
   }
 
   static async getListingPictures(id) {
-    return await HttpService.get(`/api/Listings/${id}/pictures`);
+    return await HttpService.get(`/api/pictures/${id}`);
   }
 }
 
