@@ -131,6 +131,70 @@
     .profile-listing-link {
         text-decoration: none;
     }
+
+    /* Profile Edit Form Styles */
+    #edit-profile-form {
+        width: 100%;
+        max-width: 500px;
+        margin: 20px auto;
+        padding: 32px 28px 24px 28px;
+        border-radius: 12px;
+    }
+
+    #edit-profile-form h2 {
+        text-align: center;
+        margin-top: 0;
+        margin-bottom: 32px;
+        color: #154a84;
+        font-weight: 600;
+        letter-spacing: 1px;
+    }
+
+    #edit-profile-form label {
+        font-size: 1rem;
+        color: #3a4a5a;
+        font-weight: 500;
+        margin-bottom: 8px;
+        display: block;
+    }
+
+    #edit-profile-form input[type="text"],
+    #edit-profile-form input[type="tel"] {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid #d1d5db;
+        border-radius: 6px;
+        font-size: 1rem;
+        background: #f9fafb;
+        transition: border 0.2s;
+        margin-bottom: 25px;
+        box-sizing: border-box;
+    }
+
+    #edit-profile-form input[type="text"]:focus,
+    #edit-profile-form input[type="tel"]:focus {
+        border-color: #4f8cff;
+        outline: none;
+        background: #fff;
+    }
+
+    #edit-profile-form button[type="submit"] {
+        width: 100%;
+        background: linear-gradient(180deg, #034DD5 0%, #034d88 100%);
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        padding: 12px 0;
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        margin-top: 10px;
+        transition: background 0.2s;
+    }
+
+    #edit-profile-form button[type="submit"]:hover {
+        background: linear-gradient(180deg, #336dbe 0%, #4173cf 100%);
+    }
 </style>
 <div id="user-profile-page">
     <div id="profile-details">

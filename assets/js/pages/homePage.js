@@ -3,27 +3,52 @@ import { ListingService } from '/assets/js/services/listingService.js';
 export class HomePage {
 
     init(loadContent){
-        $('#home').click(function(e) {
-            e.preventDefault();
-            loadContent('Home');
-            history.pushState({}, '', '/');
-        });
+        // Event handling moved to PageLoader for better delegation
+        // This method is kept for compatibility but handlers are set in PageLoader
     }
 
     show(params = { page: 1, limit: 9 }) {
+        console.log('HomePage.show() called with params:', params);
+        
+        // Check if required DOM elements exist with retries
+        const checkDOMAndShow = (retryCount = 0) => {
+            const searchBar = $('#search-bar');
+            const listingList = $('#listing-list');
+            console.log(`Attempt ${retryCount + 1}: Search bar found:`, searchBar.length > 0);
+            console.log(`Attempt ${retryCount + 1}: Listing list found:`, listingList.length > 0);
+            
+            if (searchBar.length === 0 || listingList.length === 0) {
+                if (retryCount < 10) { // Try up to 10 times
+                    console.log('Required DOM elements not found. Retrying in 200ms...');
+                    setTimeout(() => checkDOMAndShow(retryCount + 1), 200);
+                    return;
+                } else {
+                    console.error('Could not find required DOM elements after 10 retries');
+                    return;
+                }
+            }
+
+            // DOM elements are ready, set up the page
+            this.setupPage(params);
+        };
+
+        checkDOMAndShow();
+    }
+
+    setupPage(params) {
         const searchInput = $('<input type="text" id="search" placeholder="Search listings...">');
         const searchButton = $('<button>Search</button>');
         const tools = $('#search-bar');
+        tools.empty(); // Clear existing content
         tools.append(searchInput);
         tools.append(searchButton);
-    
         this.fetchListings(params);
     
         // Search handler
         searchButton.on('click', () => {
             params.search = searchInput.val().trim();
             params.page = 1; // Reset to first page
-            fetchListings(params);
+            this.fetchListings(params);
         });
     
         searchInput.on('keypress', (e) => {
@@ -42,7 +67,7 @@ export class HomePage {
                 
                 params.category = selectedCategory === 'all' ? null : selectedCategory;
                 params.page = 1;
-                fetchListings(params);
+                this.fetchListings(params);
             });
         });
     }
@@ -53,6 +78,7 @@ export class HomePage {
 
         ListingService.getAllListings(params)
         .then(async response => {
+            console.log('API response:', response);
             const { listings, totalNumber, page } = response;
 
             const picturesList = await Promise.all(
@@ -92,9 +118,9 @@ export class HomePage {
             listingsContainer.html(listingsHtml + paginationHtml);
 
             // Pagination buttons
-            $('.page-btn').on('click', function() {
-                params.page = parseInt($(this).data('page'));
-                fetchListings(params);
+            $('.page-btn').on('click', (event) => {
+                params.page = parseInt($(event.target).data('page'));
+                this.fetchListings(params);
             });
         })
         .catch(error => {

@@ -34,11 +34,11 @@ export class ListingPage {
                 let listingHtml = `
                     ${carouselHtml}
                     <div class="listing-details-info">
-                    <h2>${listing.title}</h2>
-                    <p><strong>Price:</strong> ${listing.price.toFixed(2)} EUR</p>
-                    <p><strong>Category:</strong> ${listing.category || 'None'}</p>
-                    <p><strong>Posted by:</strong> <a href="/profile/${listing.userId}">${author.userName}</a></p>
-                    <p><strong>Description:</strong> ${listing.description || 'No description available'}</p>
+                        <h2>${listing.title}</h2>
+                        <p><strong>Category:</strong> ${listing.category || 'None'}</p>
+                        <p><strong>Posted by:</strong> <a href="/profile/${listing.userId}">${author.userName}</a></p>
+                        <p><strong>Description:</strong> ${listing.description || 'No description available'}</p>
+                        <p><strong>Price:</strong> ${listing.price.toFixed(2)} EUR</p>
                     </div>
                 `;
 

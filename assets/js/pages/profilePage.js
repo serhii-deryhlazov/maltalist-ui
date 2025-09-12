@@ -5,51 +5,8 @@ import { ListingService } from '../services/listingService.js';
 export class ProfilePage {
 
     init(loadContent) {
-        const currentUser = CacheService.GetCurrentUser();
-        $('#profile').click((e) => {
-            e.preventDefault();
-
-            if (!currentUser || !currentUser.id) {
-                $('#content').html(`<div id="nouser"><h1>No User Logged In</h1>
-                    <script src="https://accounts.google.com/gsi/client" async defer></script>
-                    <div id="g_id_onload"
-                        data-client_id="763140433455-9tudkmcpnbec0dv4ndej56r1kho6hd3o.apps.googleusercontent.com"
-                        data-callback="onGoogleSignIn"
-                        data-auto_prompt="false">
-                    </div>
-                
-                    <div class="g_id_signin"
-                        data-type="standard"
-                        data-shape="rectangular"
-                        data-theme="outline"
-                        data-text="sign_in_with"
-                        data-size="large"
-                        data-logo_alignment="left">
-                    </div></div>`);
-            } else {
-                history.pushState({}, '', `/profile/${currentUser.id}`);
-                if (loadContent) {
-                    loadContent('My Profile');
-                    this.show(loadContent);
-                }
-            }
-        });
-
-        window.onGoogleSignIn = async function (response) {
-            try {
-                const credential = response.credential;
-                const user = await UserProfileService.verifyGoogleLogin(credential);
-                if (user && user.id) {
-                    CacheService.set("current_user", user);
-                    window.location.href = '/profile/' + user.id;
-                } else {
-                    alert("Login failed on server.");
-                }
-            } catch (err) {
-                console.error("Google login error:", err);
-                alert("Google login failed.");
-            }
-        };
+        // Event handling moved to PageLoader for better delegation
+        // This method is kept for compatibility but handlers are set in PageLoader
     }
 
     async show(loadContent, showCreate) {
@@ -66,9 +23,9 @@ export class ProfilePage {
                 <h2>${profile.userName || 'No Name Provided'}</h2>
             `;
 
-            if (profile.phoneNumber) {
-                profileDetailsHTML += `<p><strong>Phone Number:</strong> ${profile.phoneNumber}</p>`;
-            }
+            // if (profile.phoneNumber) {
+            //     profileDetailsHTML += `<p>${profile.phoneNumber}</p>`;
+            // }
 
             if (currentUser && currentUser.id === profile.id) {
                 profileDetailsHTML += `
@@ -126,23 +83,94 @@ export class ProfilePage {
             if (editProfileBtn) {
                 editProfileBtn.addEventListener('click', () => {
                     document.getElementById('profile-details').innerHTML = `
-                        <h2>Edit Profile</h2>
                         <form id="edit-profile-form">
-                            <label for="name">New Name:</label>
+                            <h2>Edit Profile</h2>
+                            <label for="name">Name:</label>
                             <input type="text" id="name" name="name" value="${profile.userName || ''}" required>
                             <label for="phoneNumber">Phone Number:</label>
-                            <input type="tel" id="phoneNumber" name="phoneNumber" value="${profile.phoneNumber || ''}">
-                            <button type="submit">Save</button>
+                            <input type="tel" id="phoneNumber" name="phoneNumber" value="${profile.phoneNumber || ''}" placeholder="+356 7912 3456" pattern="^\\+356\\s?[0-9]{4}\\s?[0-9]{4}$" title="Please enter a valid Maltese phone number (e.g., +356 7912 3456)">
+                            <button type="submit">Save Changes</button>
                         </form>
                     `;
+
+                    // Auto-format phone number input
+                    const phoneInput = document.getElementById('phoneNumber');
+                    
+                    // Set initial value with country code if empty
+                    if (!phoneInput.value || phoneInput.value.trim() === '') {
+                        phoneInput.value = '+356 ';
+                    }
+                    
+                    phoneInput.addEventListener('focus', (e) => {
+                        if (!e.target.value || e.target.value.trim() === '') {
+                            e.target.value = '+356 ';
+                        }
+                    });
+                    
+                    phoneInput.addEventListener('input', (e) => {
+                        let value = e.target.value;
+                        
+                        // Remove all non-digit characters except +
+                        let digitsOnly = value.replace(/[^+0-9]/g, '');
+                        
+                        // Ensure it starts with +356
+                        if (!digitsOnly.startsWith('+356')) {
+                            digitsOnly = '+356' + digitsOnly.replace(/^\+?356?/, '');
+                        }
+                        
+                        // Limit to +356 + 8 digits max
+                        if (digitsOnly.length > 12) {
+                            digitsOnly = digitsOnly.substring(0, 12);
+                        }
+                        
+                        // Format with spaces: +356 XXXX XXXX
+                        let formatted = '+356';
+                        const remainingDigits = digitsOnly.substring(4);
+                        
+                        if (remainingDigits.length > 0) {
+                            formatted += ' ' + remainingDigits.substring(0, 4);
+                            if (remainingDigits.length > 4) {
+                                formatted += ' ' + remainingDigits.substring(4, 8);
+                            }
+                        } else {
+                            formatted += ' ';
+                        }
+                        
+                        e.target.value = formatted;
+                        
+                        // Set cursor position after the last digit
+                        const cursorPos = formatted.length;
+                        setTimeout(() => {
+                            e.target.setSelectionRange(cursorPos, cursorPos);
+                        }, 0);
+                    });
+                    
+                    phoneInput.addEventListener('keydown', (e) => {
+                        // Prevent deletion of country code
+                        if ((e.key === 'Backspace' || e.key === 'Delete') && e.target.selectionStart <= 5) {
+                            e.preventDefault();
+                            e.target.value = '+356 ';
+                            e.target.setSelectionRange(5, 5);
+                        }
+                    });
             
                     document.getElementById('edit-profile-form').addEventListener('submit', async (e) => {
                         e.preventDefault();
                         const newName = document.getElementById('name').value;
                         const newPhoneNumber = document.getElementById('phoneNumber').value;
+                        
+                        // Validate Maltese phone number format if provided
+                        if (newPhoneNumber && newPhoneNumber.trim() !== '' && newPhoneNumber !== '+356 ') {
+                            const phoneRegex = /^\+356\s[0-9]{4}\s[0-9]{4}$/;
+                            if (!phoneRegex.test(newPhoneNumber)) {
+                                alert('Please enter a valid Maltese phone number (e.g., +356 7912 3456)');
+                                return;
+                            }
+                        }
+                        
                         const currentUser = CacheService.GetCurrentUser();
                         currentUser.userName = newName;
-                        currentUser.phoneNumber = newPhoneNumber;
+                        currentUser.phoneNumber = newPhoneNumber === '+356 ' ? '' : newPhoneNumber;
                         CacheService.set("current_user", currentUser);
                         await UserProfileService.updateUserProfile(profile.id, currentUser);
             
