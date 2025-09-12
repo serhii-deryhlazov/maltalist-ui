@@ -23,15 +23,11 @@ export class ProfilePage {
                      onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(profile.userName || 'User')}&size=100&background=004779&color=ffffff&bold=true';">
                 <div id="profile-header-data">
                 <h2>${profile.userName || 'No Name Provided'}</h2>
+                </div></div>
             `;
-
-            // if (profile.phoneNumber) {
-            //     profileDetailsHTML += `<p>${profile.phoneNumber}</p>`;
-            // }
 
             if (currentUser && currentUser.id === profile.id) {
                 profileDetailsHTML += `
-                    </div></div>
                     <button id="create">
                         <span class="material-symbols-outlined">add</span> Create Listing
                     </button>
@@ -52,10 +48,11 @@ export class ProfilePage {
                 profileDetailsHTML += `<h3>Listings</h3><ul id="my-listings">`;
                 for (const listing of myListings) {
                     const pictures = await ListingService.getListingPictures(listing.id);
+                    const imageSrc = pictures && pictures.length > 0 ? pictures[0] : '/assets/img/placeholder.png';
                     profileDetailsHTML += `
                         <a class="profile-listing-link" href="/listing/${listing.id}">
                         <li class="profile-listing">
-                            <img src="${pictures[0]}" alt="${listing.title}">
+                            <img src="${imageSrc}" alt="${listing.title}">
                             <div class="listing-info">
                             <strong>${listing.title}</strong>
                             <span>${listing.category || ''} | ${listing.price.toFixed(2)}€</span>

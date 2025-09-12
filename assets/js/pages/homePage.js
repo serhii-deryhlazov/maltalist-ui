@@ -88,10 +88,11 @@ export class HomePage {
             let listingsHtml = '<ul>';
             listings.forEach((listing, idx) => {
                 const pictures = picturesList[idx];
+                const imageSrc = pictures && pictures.length > 0 ? pictures[0] : '/assets/img/placeholder.png';
                 listingsHtml += `
                     <li>
                         <a href="/listing/${listing.id}">
-                            <img src="${pictures[0]}" alt="${listing.title}">
+                            <img src="${imageSrc}" alt="${listing.title}">
                             <div>
                                 <h3>${listing.title}</h3>
                                 <p>${listing.description ? listing.description.substring(0, 100) + '...' : 'No description available'}</p>
