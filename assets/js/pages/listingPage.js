@@ -35,11 +35,9 @@ export class ListingPage {
                     ${carouselHtml}
                     <div class="listing-details-info">
                         <h2>${listing.title}</h2>
-                        <p><strong>Category:</strong> ${listing.category || 'None'}</p>
-                        <p><strong>Posted by:</strong> <a href="/profile/${listing.userId}">${author.userName}</a></p>
-                        <p><strong>Description:</strong> ${listing.description || 'No description available'}</p>
                         <p><strong>Price:</strong> ${listing.price.toFixed(2)} EUR</p>
-                    </div>
+                        <p><strong>Description:</strong> ${listing.description || 'No description available'}</p>
+                        <p><strong>Category:</strong> ${listing.category || 'None'} | <strong>Posted by:</strong> <a href="/profile/${listing.userId}">${author.userName}</a></p>
                 `;
 
                 const currentUser = CacheService.get("current_user");
@@ -47,14 +45,73 @@ export class ListingPage {
                     listingHtml += `<button id="edit-listing-btn">Edit Listing</button>`;
                 }
                 else{
-                    if (author.phoneNumber) {
-                        listingHtml += `<p id="listing-contact"><strong>Call:</strong> ${author.phoneNumber}</p>`;
-                    } else if (author.email) {
-                        listingHtml += `<p id="listing-contact"><strong>Email:</strong> ${author.email}</p>`;
+                    if (currentUser) {
+                        if (author.phoneNumber) {
+                            listingHtml += `
+                                <p id="listing-contact">
+                                    <strong>Phone: </strong> ${author.phoneNumber}
+                                    <button class="copy-btn" data-text="${author.phoneNumber}" title="Copy phone number">
+                                        <span class="material-symbols-outlined">content_copy</span>
+                                    </button>
+                                </p>`;
+                        } else if (author.email) {
+                            listingHtml += `
+                                <p id="listing-contact">
+                                    <strong>Email: </strong> ${author.email}
+                                    <button class="copy-btn" data-text="${author.email}" title="Copy email">
+                                        <span class="material-symbols-outlined">content_copy</span>
+                                    </button>
+                                </p>`;
+                        }
+                    } else {
+                        listingHtml += `<p><em>Log in to see contact details.</em></p>`;
                     }
                 }
+                listingHtml += `</div>`;
                 
                 listingContainer.html(listingHtml);
+                
+                // Add click event listener for copy buttons
+                $('.copy-btn').on('click', function(e) {
+                    e.preventDefault();
+                    let textToCopy = $(this).data('text');
+                    const button = this;
+                    
+                    // Remove whitespaces from phone numbers (keep spaces for emails)
+                    if (textToCopy && textToCopy.includes('+356')) {
+                        textToCopy = textToCopy.replace(/\s/g, '');
+                    }
+                    
+                    navigator.clipboard.writeText(textToCopy).then(function() {
+                        // Show temporary success message
+                        const originalContent = button.innerHTML;
+                        button.innerHTML = '<span class="material-symbols-outlined success">check</span>';
+                        setTimeout(() => {
+                            button.innerHTML = originalContent;
+                        }, 1500);
+                    }).catch(function(err) {
+                        console.error('Failed to copy: ', err);
+                        
+                        // Fallback method for older browsers
+                        try {
+                            const textArea = document.createElement('textarea');
+                            textArea.value = textToCopy;
+                            document.body.appendChild(textArea);
+                            textArea.select();
+                            document.execCommand('copy');
+                            document.body.removeChild(textArea);
+                            
+                            // Show success feedback
+                            const originalContent = button.innerHTML;
+                            button.innerHTML = '<span class="material-symbols-outlined">check</span>';
+                            setTimeout(() => {
+                                button.innerHTML = originalContent;
+                            }, 1500);
+                        } catch (fallbackErr) {
+                            alert('Failed to copy to clipboard. Please copy manually: ' + textToCopy);
+                        }
+                    });
+                });
                 
                 $('.carousel-thumb').on('click', function() {
                     const idx = $(this).data('idx');
@@ -66,7 +123,7 @@ export class ListingPage {
                 // Edit Listing handler
                 const editBtn = document.getElementById("edit-listing-btn");
                 if (editBtn) {
-                    editBtn.addEventListener("click", () => this.showEditForm());
+                    editBtn.addEventListener("click", () => this.showEditForm(listing));
                 }
             } else {
                 listingContainer.html('<p>Listing not found.</p>');
@@ -271,7 +328,12 @@ export class ListingPage {
         });
     }
 
-    showEditForm(){
+    showEditForm(listing){
+        const listingContainer = $('#listing-details');
+        
+        // Get existing pictures for the listing
+        const listingId = listing.id;
+        
         // Build edit form with current data as placeholder and image previews
         let editFormHtml = `
             <h3>Edit Listing</h3>
@@ -303,6 +365,10 @@ export class ListingPage {
                     </select>
                 </div>
                 <div>
+                    <label for="edit-location">Location:</label>
+                    <input type="text" id="edit-location" name="location" value="${listing.location || ''}" placeholder="Enter location">
+                </div>
+                <div>
                     <label>Pictures (up to 10):</label>
                     <div id="edit-picture-inputs" style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px;"></div>
                 </div>
@@ -312,147 +378,230 @@ export class ListingPage {
         `;
         listingContainer.html(editFormHtml);
 
-        // Picture input logic
-        const editPictureInputsDiv = document.getElementById('edit-picture-inputs');
-        const editPictureFiles = Array(10).fill(null);
+        // Load existing pictures and setup form
+        this.setupEditForm(listing, listingId);
+    }
 
-        for (let i = 0; i < 10; i++) {
-            const wrapper = document.createElement('div');
-            wrapper.style.position = 'relative';
-            wrapper.style.width = '100px';
-            wrapper.style.height = '100px';
+    async setupEditForm(listing, listingId) {
+        try {
+            // Get existing pictures
+            const existingPictures = await ListingService.getListingPictures(listingId);
+            
+            // Picture input logic
+            const editPictureInputsDiv = document.getElementById('edit-picture-inputs');
+            const editPictureFiles = Array(10).fill(null);
 
-            const input = document.createElement('input');
-            input.type = 'file';
-            input.accept = 'image/*';
-            input.style.width = '100px';
-            input.style.height = '100px';
-            input.style.opacity = 1;
-            input.dataset.idx = i;
+            for (let i = 0; i < 10; i++) {
+                const wrapper = document.createElement('div');
+                wrapper.style.position = 'relative';
+                wrapper.style.width = '100px';
+                wrapper.style.height = '100px';
 
-            const preview = document.createElement('img');
-            preview.style.display = 'none';
-            preview.style.position = 'absolute';
-            preview.style.top = '0';
-            preview.style.left = '0';
-            preview.style.width = '100px';
-            preview.style.height = '100px';
-            preview.style.objectFit = 'cover';
-            preview.style.borderRadius = '6px';
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.accept = 'image/*';
+                input.style.width = '100px';
+                input.style.height = '100px';
+                input.style.opacity = 1;
+                input.dataset.idx = i;
 
-            const delBtn = document.createElement('button');
-            delBtn.type = 'button';
-            delBtn.textContent = '✕';
-            delBtn.style.position = 'absolute';
-            delBtn.style.top = '2px';
-            delBtn.style.right = '2px';
-            delBtn.style.background = 'rgba(0,0,0,0.6)';
-            delBtn.style.color = 'white';
-            delBtn.style.border = 'none';
-            delBtn.style.borderRadius = '50%';
-            delBtn.style.width = '22px';
-            delBtn.style.height = '22px';
-            delBtn.style.cursor = 'pointer';
-            delBtn.style.display = 'none';
-            delBtn.style.zIndex = '2';
+                const preview = document.createElement('img');
+                preview.style.display = 'none';
+                preview.style.position = 'absolute';
+                preview.style.top = '0';
+                preview.style.left = '0';
+                preview.style.width = '100px';
+                preview.style.height = '100px';
+                preview.style.objectFit = 'cover';
+                preview.style.borderRadius = '6px';
 
-            // Prepopulate with existing image if present
-            const picKey = `picture${i+1}`;
-            if (listing[picKey]) {
-                preview.src = listing[picKey];
-                preview.style.display = 'block';
-                delBtn.style.display = 'block';
-                editPictureFiles[i] = null; // Will use existing image unless replaced
-            }
+                const delBtn = document.createElement('button');
+                delBtn.type = 'button';
+                delBtn.textContent = '✕';
+                delBtn.style.position = 'absolute';
+                delBtn.style.top = '2px';
+                delBtn.style.right = '2px';
+                delBtn.style.background = 'rgba(0,0,0,0.6)';
+                delBtn.style.color = 'white';
+                delBtn.style.border = 'none';
+                delBtn.style.borderRadius = '50%';
+                delBtn.style.width = '22px';
+                delBtn.style.height = '22px';
+                delBtn.style.cursor = 'pointer';
+                delBtn.style.display = 'none';
+                delBtn.style.zIndex = '2';
 
-            // Handle file input change
-            input.addEventListener('change', function() {
-                const idx = parseInt(this.dataset.idx);
-                if (this.files && this.files[0]) {
-                    const file = this.files[0];
-                    if (!file.type.startsWith('image/')) {
-                        alert('Only image files are allowed.');
-                        this.value = '';
+                // Prepopulate with existing image if present
+                if (existingPictures && existingPictures[i]) {
+                    preview.src = existingPictures[i];
+                    preview.style.display = 'block';
+                    delBtn.style.display = 'block';
+                    editPictureFiles[i] = null; // Will use existing image unless replaced
+                }
+
+                // Handle file input change
+                input.addEventListener('change', function() {
+                    const idx = parseInt(this.dataset.idx);
+                    if (this.files && this.files[0]) {
+                        const file = this.files[0];
+                        if (!file.type.startsWith('image/')) {
+                            alert('Only image files are allowed.');
+                            this.value = '';
+                            preview.style.display = 'none';
+                            delBtn.style.display = 'none';
+                            editPictureFiles[idx] = null;
+                            return;
+                        }
+                        preview.src = URL.createObjectURL(file);
+                        preview.style.display = 'block';
+                        delBtn.style.display = 'block';
+                        editPictureFiles[idx] = file;
+                    } else {
                         preview.style.display = 'none';
                         delBtn.style.display = 'none';
                         editPictureFiles[idx] = null;
-                        return;
                     }
-                    preview.src = URL.createObjectURL(file);
-                    preview.style.display = 'block';
-                    delBtn.style.display = 'block';
-                    editPictureFiles[idx] = file;
-                } else {
+                });
+
+                // Handle delete button
+                delBtn.addEventListener('click', function() {
+                    input.value = '';
                     preview.style.display = 'none';
                     delBtn.style.display = 'none';
-                    editPictureFiles[idx] = null;
+                    editPictureFiles[i] = null;
+                    // Clear the existing picture reference
+                    if (existingPictures && existingPictures[i]) {
+                        existingPictures[i] = null;
+                    }
+                });
+
+                wrapper.appendChild(input);
+                wrapper.appendChild(preview);
+                wrapper.appendChild(delBtn);
+                editPictureInputsDiv.appendChild(wrapper);
+            }
+
+            // Edit form submission
+            document.getElementById('edit-listing-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const editFormMessage = document.getElementById('edit-form-message');
+                editFormMessage.textContent = '';
+
+                // Validate required fields
+                const title = document.getElementById('edit-name').value.trim();
+                const description = document.getElementById('edit-description').value.trim();
+                const price = parseFloat(document.getElementById('edit-price').value);
+                
+                if (!title || !description || isNaN(price) || price < 0) {
+                    editFormMessage.textContent = 'Please fill in all required fields with valid values.';
+                    editFormMessage.style.color = 'red';
+                    return;
                 }
-            });
 
-            // Handle delete button
-            delBtn.addEventListener('click', function() {
-                input.value = '';
-                preview.style.display = 'none';
-                delBtn.style.display = 'none';
-                editPictureFiles[i] = null;
-                listing[`picture${i+1}`] = null;
-            });
-
-            wrapper.appendChild(input);
-            wrapper.appendChild(preview);
-            wrapper.appendChild(delBtn);
-            editPictureInputsDiv.appendChild(wrapper);
-        }
-
-        // Edit form submission
-        document.getElementById('edit-listing-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const editFormMessage = document.getElementById('edit-form-message');
-            editFormMessage.textContent = '';
-
-            const pictureData = {};
-            try {
+                // Prepare pictures for upload - detect if we need to handle deletions
+                const currentPictureState = [];
+                let hasChanges = false;
+                
+                // Check the current state of pictures in the form
                 for (let i = 0; i < 10; i++) {
-                    const file = editPictureFiles[i];
-                    if (file) {
-                        const base64String = await resizeAndConvertToBase64(file, 800, 0.7);
-                        pictureData[`Picture${i + 1}`] = base64String;
-                    } else if (listing[`picture${i+1}`]) {
-                        pictureData[`Picture${i + 1}`] = listing[`picture${i+1}`];
+                    if (editPictureFiles[i]) {
+                        // New file uploaded at this position
+                        currentPictureState.push({ type: 'new', file: editPictureFiles[i] });
+                        hasChanges = true;
+                    } else if (existingPictures[i] && existingPictures[i] !== null) {
+                        // Existing picture still present
+                        currentPictureState.push({ type: 'existing', url: existingPictures[i] });
+                    } else {
+                        // Empty slot
+                        currentPictureState.push(null);
                     }
                 }
-            } catch (error) {
-                console.error('Image processing error:', error);
-                editFormMessage.textContent = 'Error processing images.';
-                editFormMessage.style.color = 'red';
-                return;
-            }
+                
+                // Check if any existing pictures were deleted
+                const originalCount = existingPictures.filter(p => p).length;
+                const currentExistingCount = currentPictureState.filter(p => p && p.type === 'existing').length;
+                if (currentExistingCount < originalCount) {
+                    hasChanges = true;
+                }
+                
+                // Only collect files that should remain (both new and existing)
+                const allFilesToKeep = [];
+                for (const state of currentPictureState) {
+                    if (state) {
+                        if (state.type === 'new') {
+                            allFilesToKeep.push(state.file);
+                        } else if (state.type === 'existing') {
+                            // For existing files, we need to download and convert to File objects
+                            try {
+                                const response = await fetch(state.url);
+                                const blob = await response.blob();
+                                const fileName = state.url.split('/').pop() || `existing_${Date.now()}.jpg`;
+                                const file = new File([blob], fileName, { type: blob.type });
+                                allFilesToKeep.push(file);
+                            } catch (err) {
+                                console.error('Error downloading existing picture:', err);
+                            }
+                        }
+                    }
+                }
 
-            const data = {
-                Title: document.getElementById('edit-name').value,
-                Description: document.getElementById('edit-description').value,
-                Price: parseFloat(document.getElementById('edit-price').value),
-                Category: document.getElementById('edit-category').value || null,
-                UserId: CacheService.get("current_user").id,
-                ...pictureData
-            };
+                console.log('Pictures to keep:', allFilesToKeep.length, 'Has changes:', hasChanges);
 
-            try {
-                const response = await ListingService.updateListing(listing.id, data);
-                if (response) {
-                    editFormMessage.textContent = 'Listing updated successfully!';
-                    editFormMessage.style.color = 'green';
-                    loadListingDetailsPage();
-                } else {
-                    editFormMessage.textContent = 'Failed to update listing. Please try again.';
+                const data = {
+                    Title: title,
+                    Description: description,
+                    Price: price,
+                    Category: document.getElementById('edit-category').value || null,
+                    Location: document.getElementById('edit-location').value || null,
+                    UserId: CacheService.get("current_user").id
+                };
+
+                console.log('Sending update data:', data);
+
+                try {
+                    // Update listing data
+                    const response = await ListingService.updateListing(listing.id, data);
+                    if (response) {
+                        // Update pictures if there are any changes (additions or deletions)
+                        if (hasChanges) {
+                            try {
+                                // Use updateListingPictures to replace all pictures with the current set
+                                await ListingService.updateListingPictures(listing.id, allFilesToKeep);
+                                editFormMessage.textContent = 'Listing and pictures updated successfully!';
+                                editFormMessage.style.color = 'green';
+                            } catch (imgErr) {
+                                console.error('Error updating images:', imgErr);
+                                editFormMessage.textContent = 'Listing updated, but image update failed.';
+                                editFormMessage.style.color = 'orange';
+                            }
+                        } else {
+                            editFormMessage.textContent = 'Listing updated successfully!';
+                            editFormMessage.style.color = 'green';
+                        }
+                        
+                        setTimeout(() => {
+                            window.location.href = `/listing/${listing.id}`;
+                        }, 1500);
+                    } else {
+                        editFormMessage.textContent = 'Failed to update listing. Please try again.';
+                        editFormMessage.style.color = 'red';
+                    }
+                } catch (error) {
+                    console.error('Update listing error:', error);
+                    if (error.message && error.message.includes('400')) {
+                        editFormMessage.textContent = 'Invalid data. Please check all fields and try again.';
+                    } else {
+                        editFormMessage.textContent = 'Error updating listing.';
+                    }
                     editFormMessage.style.color = 'red';
                 }
-            } catch (error) {
-                console.error('Update listing error:', error);
-                editFormMessage.textContent = 'Error updating listing.';
-                editFormMessage.style.color = 'red';
-            }
-        });
+            });
+            
+        } catch (error) {
+            console.error('Error loading existing pictures:', error);
+            document.getElementById('edit-form-message').textContent = 'Error loading existing pictures.';
+            document.getElementById('edit-form-message').style.color = 'red';
+        }
     }
 
     static async processImage(file) {

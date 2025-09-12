@@ -10,6 +10,10 @@ body {
     flex-direction: column;
 }
 
+strong {
+    color: #004779;
+}
+
 .logo {
     width: auto;
     height: 40px;

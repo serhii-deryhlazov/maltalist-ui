@@ -49,6 +49,36 @@
         border: 2px solid #034d88;
     }
 
+    /* Copy button styles */
+    .copy-btn {
+        background: none;
+        border: none;
+        border-radius: 4px;
+        padding: 4px 6px;
+        margin-left: -2px;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s;
+        color: #666;
+        font-size: 14px;
+        vertical-align: sub;
+    }
+
+    .copy-btn .material-symbols-outlined.success {
+        color: green;
+    }
+
+    .copy-btn:hover {
+        background-color: #f5f5f5;
+        color: #333;
+    }
+
+    .copy-btn .material-symbols-outlined {
+        font-size: 16px;
+    }
+
     #listing-details {
         display: flex;
         flex-flow: row nowrap;
@@ -79,10 +109,6 @@
     #listing-contact {
         border-color: #004779ce;
         color: #004779ce;
-        position: absolute;
-        right: 6%;
-        bottom: 13%;
-        border-width: 2px;
         background-color: transparent;
     }
 

@@ -18,7 +18,9 @@ export class ProfilePage {
             let profileDetailsHTML = '<div id="profile-info">';
             profileDetailsHTML += `
                 <div id="profile-header">
-                <img src="${profile.userPicture || 'https://via.placeholder.com/100'}" alt="Profile Picture">
+                <img src="${profile.userPicture || 'https://via.placeholder.com/100'}" 
+                     alt="Profile Picture" 
+                     onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(profile.userName || 'User')}&size=100&background=004779&color=ffffff&bold=true';">
                 <div id="profile-header-data">
                 <h2>${profile.userName || 'No Name Provided'}</h2>
             `;
