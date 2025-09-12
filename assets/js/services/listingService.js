@@ -14,14 +14,6 @@ class ListingService {
     return await HttpService.post(`/api/pictures/${listingId}`, formData);
   }
 
-  static async updateListingPictures(listingId, pictures) {
-    const formData = new FormData();
-    pictures.forEach((file, idx) => {
-      formData.append(`Picture${idx + 1}`, file);
-    });
-    return await HttpService.put(`/api/pictures/${listingId}`, formData);
-  }
-
   static async getListingById(id) {
     return await HttpService.get(`/api/Listings/${id}`);
   }
