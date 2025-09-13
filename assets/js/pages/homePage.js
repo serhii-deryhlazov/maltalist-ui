@@ -44,6 +44,28 @@ export class HomePage {
         tools.append(searchButton);
         this.fetchListings(params);
     
+        // Sort handler
+        $('#sort').on('change', () => {
+            const sortValue = $('#sort').val();
+            params.sort = sortValue;
+            if (sortValue === 'distance') {
+                $('#location-select').show();
+                params.location = $('#location-select').val();
+            } else {
+                $('#location-select').hide();
+                delete params.location;
+            }
+            params.page = 1;
+            this.fetchListings(params);
+        });
+
+        // Location handler for distance
+        $('#location-select').on('change', () => {
+            params.location = $('#location-select').val();
+            params.page = 1;
+            this.fetchListings(params);
+        });
+    
         // Search handler
         searchButton.on('click', () => {
             params.search = searchInput.val().trim();
