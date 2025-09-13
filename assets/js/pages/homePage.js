@@ -118,7 +118,7 @@ export class HomePage {
                             <div>
                                 <h3>${listing.title}</h3>
                                 <p>${listing.description ? listing.description.substring(0, 100) + '...' : 'No description available'}</p>
-                                <p>${listing.price.toFixed(2)} EUR</p>
+                                <p>${listing.location || 'Location not specified'} | ${listing.price.toFixed(2)} EUR</p>
                             </div>
                         </a>
                     </li>
