@@ -51,9 +51,11 @@ export class HomePage {
             if (sortValue === 'distance') {
                 $('#location-select').show();
                 params.location = $('#location-select').val();
+                $('#search-n-sort').addClass('distance-mode');
             } else {
                 $('#location-select').hide();
                 delete params.location;
+                $('#search-n-sort').removeClass('distance-mode');
             }
             params.page = 1;
             this.fetchListings(params);

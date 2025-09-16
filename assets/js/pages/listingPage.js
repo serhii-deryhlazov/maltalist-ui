@@ -216,11 +216,11 @@ export class ListingPage {
 
         document.getElementById('confirm-promotion').addEventListener('click', async () => {
             const type = document.getElementById('promotion-type').value;
-            const amount = type === 'week' ? 200 : 500; // in cents
+            const priceId = type === 'week' ? 'price_1S84D4CjFdJ7izyJ7cddtZCf' : 'price_1S84D4CjFdJ7izyJWk98XDT4'; // Stripe Price IDs
             // Use Stripe for payment
             const stripe = Stripe('pk_test_51S7JlICjFdJ7izyJ4a9AJUPconADc29JQKxPX8MpAfM56xvONX6HfSDgpvs5I32RZjaBq1uxCzrIbwxzzfpFIAGy00e9WUDWHI'); // Replace with your test publishable key
             const { error } = await stripe.redirectToCheckout({
-                lineItems: [{ price_data: { currency: 'eur', product_data: { name: 'Listing Promotion' }, unit_amount: amount }, quantity: 1 }],
+                lineItems: [{ price: priceId, quantity: 1 }],
                 mode: 'payment',
                 successUrl: window.location.href + '?promotion=success&listing=' + listingId + '&type=' + type,
                 cancelUrl: window.location.href,
