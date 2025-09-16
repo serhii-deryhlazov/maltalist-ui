@@ -98,58 +98,108 @@ export class HomePage {
         const listingsContainer = $('#listing-list');
         listingsContainer.html('<p>Loading...</p>');
 
-        ListingService.getAllListings(params)
-        .then(async response => {
-            console.log('API response:', response);
-            const { listings, totalNumber, page } = response;
+        let allListings = [];
+        let promotedIds = new Set();
 
-            const picturesList = await Promise.all(
-                listings.map(l => ListingService.getListingPictures(l.id))
-            );
+        if (params.category) {
+            ListingService.getPromotedListings(params.category)
+            .then(async promoted => {
+                allListings = promoted || [];
+                promotedIds = new Set(allListings.map(l => l.id));
+                return ListingService.getAllListings(params);
+            })
+            .then(async response => {
+                const { listings, totalNumber, page } = response;
+                // Add regular listings not already in promoted
+                const regular = listings.filter(l => !promotedIds.has(l.id));
+                allListings = allListings.concat(regular);
 
-            let listingsHtml = '<ul>';
-            listings.forEach((listing, idx) => {
-                const pictures = picturesList[idx];
-                const imageSrc = pictures && pictures.length > 0 ? pictures[0] : '/assets/img/placeholder.png';
-                listingsHtml += `
-                    <li>
-                        <a href="/listing/${listing.id}">
-                            <img src="${imageSrc}" alt="${listing.title}">
-                            <div>
-                                <h3>${listing.title}</h3>
-                                <p>${listing.description ? listing.description.substring(0, 100) + '...' : 'No description available'}</p>
-                                <p>${listing.location || 'Location not specified'} | ${listing.price.toFixed(2)} EUR</p>
-                            </div>
-                        </a>
-                    </li>
-                `;
+                const picturesList = await Promise.all(
+                    allListings.map(l => ListingService.getListingPictures(l.id))
+                );
+
+                let listingsHtml = '<ul>';
+                allListings.forEach((listing, idx) => {
+                    const pictures = picturesList[idx];
+                    const imageSrc = pictures && pictures.length > 0 ? pictures[0] : '/assets/img/placeholder.png';
+                    const isPromoted = promotedIds.has(listing.id);
+                    listingsHtml += `
+                        <li class="${isPromoted ? 'promoted' : ''}">
+                            <a href="/listing/${listing.id}">
+                                <img src="${imageSrc}" alt="${listing.title}">
+                                <div>
+                                    <h3>${listing.title}${isPromoted ? ' <span class="promoted-badge">Promoted</span>' : ''}</h3>
+                                    <p>${listing.description ? listing.description.substring(0, 100) + '...' : 'No description available'}</p>
+                                    <p>${listing.location || 'Location not specified'} | ${listing.price.toFixed(2)} EUR</p>
+                                </div>
+                            </a>
+                        </li>
+                    `;
+                });
+                listingsHtml += '</ul>';
+
+                // Pagination (simplified, since promoted are shown first)
+                listingsContainer.html(listingsHtml);
+
+                // For now, no pagination for promoted
+            })
+            .catch(error => {
+                console.error("Error loading listings:", error);
+                listingsContainer.html('<p>Error loading listings</p>');
             });
-            listingsHtml += '</ul>';
+        } else {
+            ListingService.getAllListings(params)
+            .then(async response => {
+                const { listings, totalNumber, page } = response;
 
-            // Pagination
-            const totalPages = Math.ceil(totalNumber / params.limit);
-            let paginationHtml = '<div class="pagination">';
-            if (page > 1) {
-                paginationHtml += `<button class="page-btn" data-page="${page - 1}">Previous</button>`;
-            }
-            paginationHtml += `<span>Page ${page} of ${totalPages}</span>`;
-            if (page < totalPages) {
-                paginationHtml += `<button class="page-btn" data-page="${page + 1}">Next</button>`;
-            }
-            paginationHtml += '</div>';
+                const picturesList = await Promise.all(
+                    listings.map(l => ListingService.getListingPictures(l.id))
+                );
 
-            listingsContainer.html(listingsHtml + paginationHtml);
+                let listingsHtml = '<ul>';
+                listings.forEach((listing, idx) => {
+                    const pictures = picturesList[idx];
+                    const imageSrc = pictures && pictures.length > 0 ? pictures[0] : '/assets/img/placeholder.png';
+                    listingsHtml += `
+                        <li>
+                            <a href="/listing/${listing.id}">
+                                <img src="${imageSrc}" alt="${listing.title}">
+                                <div>
+                                    <h3>${listing.title}</h3>
+                                    <p>${listing.description ? listing.description.substring(0, 100) + '...' : 'No description available'}</p>
+                                    <p>${listing.location || 'Location not specified'} | ${listing.price.toFixed(2)} EUR</p>
+                                </div>
+                            </a>
+                        </li>
+                    `;
+                });
+                listingsHtml += '</ul>';
 
-            // Pagination buttons
-            $('.page-btn').on('click', (event) => {
-                params.page = parseInt($(event.target).data('page'));
-                this.fetchListings(params);
+                // Pagination
+                const totalPages = Math.ceil(totalNumber / params.limit);
+                let paginationHtml = '<div class="pagination">';
+                if (page > 1) {
+                    paginationHtml += `<button class="page-btn" data-page="${page - 1}">Previous</button>`;
+                }
+                paginationHtml += `<span>Page ${page} of ${totalPages}</span>`;
+                if (page < totalPages) {
+                    paginationHtml += `<button class="page-btn" data-page="${page + 1}">Next</button>`;
+                }
+                paginationHtml += '</div>';
+
+                listingsContainer.html(listingsHtml + paginationHtml);
+
+                // Pagination buttons
+                $('.page-btn').on('click', (event) => {
+                    params.page = parseInt($(event.target).data('page'));
+                    this.fetchListings(params);
+                });
+            })
+            .catch(error => {
+                console.error("Error loading listings:", error);
+                listingsContainer.html('<p>Error loading listings</p>');
             });
-        })
-        .catch(error => {
-            console.error("Error loading listings:", error);
-            listingsContainer.html('<p>Error loading listings</p>');
-        });
+        }
     }
 
 }

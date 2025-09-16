@@ -71,7 +71,7 @@ export class PageLoader {
             } else {
                 history.pushState({}, '', `/profile/${currentUser.id}`);
                 PageLoader.loadContent('My Profile', () => {
-                    setTimeout(() => profilePage.show(PageLoader.loadContent, listingPage.showCreate), 100);
+                    setTimeout(() => profilePage.show(PageLoader.loadContent, ListingPage.showCreate), 100);
                 });
             }
         });
@@ -114,10 +114,10 @@ export class PageLoader {
 
         if (path.startsWith('/profile/')) {
             PageLoader.loadContent('My Profile', () => {
-                setTimeout(() => profilePage.show(PageLoader.loadContent, listingPage.showCreate), 100);
+                setTimeout(() => profilePage.show(PageLoader.loadContent, ListingPage.showCreate), 100);
             });
         } else if (path === '/create') {
-            PageLoader.loadContent('Create Listing', () => listingPage.showCreate());
+            PageLoader.loadContent('Create Listing', () => ListingPage.showCreate());
         } else if (path.startsWith('/listing/')) {
             PageLoader.loadContent('Listing Details', () => listingPage.show());
         } else {

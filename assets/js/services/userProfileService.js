@@ -2,15 +2,15 @@ import { HttpService } from './httpService.js';
 
 class UserProfileService {
   static async getUserProfile(id) {
-      return await HttpService.get(`/api/UserProfile/${id}`);
+      return await HttpService.get(`/UserProfile/${id}`);
   }
 
   static async createUserProfile(data) {
-      return await HttpService.post('/api/UserProfile', data);
+      return await HttpService.post('/UserProfile', data);
   }
 
   static async updateUserProfile(id, data) {
-      return await HttpService.put(`/api/UserProfile/${id}`, data)
+      return await HttpService.put(`/UserProfile/${id}`, data)
       .then(res => res.ok ? res.json() : null)
         .catch(err => {
             console.error('PUT request failed:', err);
@@ -19,7 +19,7 @@ class UserProfileService {
   }
 
   static async deleteUserProfile(id) {
-      return await fetch(`/api/UserProfile/${id}`, {
+      return await fetch(`/UserProfile/${id}`, {
           method: 'DELETE'
       }).then(res => res.ok)
         .catch(err => {
@@ -29,7 +29,7 @@ class UserProfileService {
   }
 
   static async verifyGoogleLogin(idToken) {
-      return await HttpService.post('/api/GoogleAuth/login', { idToken });
+      return await HttpService.post('/GoogleAuth/login', { idToken });
   }
 }
 

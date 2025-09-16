@@ -6,6 +6,34 @@ export class ListingPage {
 
     async show()
     {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('promotion') === 'success') {
+            const listingId = parseInt(urlParams.get('listing'));
+            const type = urlParams.get('type');
+            const expirationDate = new Date();
+            if (type === 'week') {
+                expirationDate.setDate(expirationDate.getDate() + 7);
+            } else {
+                expirationDate.setMonth(expirationDate.getMonth() + 1);
+            }
+            // Get listing to get category
+            const listing = await ListingService.getListingById(listingId);
+            if (listing) {
+                await fetch('/api/Promotions', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        listingId: listingId,
+                        expirationDate: expirationDate.toISOString(),
+                        category: listing.category
+                    })
+                });
+                // Clean URL
+                window.history.replaceState({}, '', window.location.pathname);
+                alert('Listing promoted successfully!');
+            }
+        }
+
         const listingId = window.location.pathname.split('/')[2];
         const listingContainer = $('#listing-details');
         
@@ -43,7 +71,7 @@ export class ListingPage {
 
                 const currentUser = CacheService.get("current_user");
                 if (currentUser && currentUser.id === listing.userId) {
-                    listingHtml += `<div class="listing-buttons"><button id="edit-listing-btn">Edit Listing</button><button id="delete-listing-btn">Delete Listing</button></div>`;
+                    listingHtml += `<div class="listing-buttons"><button id="edit-listing-btn">Edit Listing</button><button id="delete-listing-btn">Delete Listing</button><button id="promote-listing-btn">Promote Listing</button></div>`;
                 }
                 else{
                     if (currentUser) {
@@ -132,6 +160,12 @@ export class ListingPage {
                 if (deleteBtn) {
                     deleteBtn.addEventListener("click", () => this.confirmDelete(listing.id));
                 }
+
+                // Promote Listing handler
+                const promoteBtn = document.getElementById("promote-listing-btn");
+                if (promoteBtn) {
+                    promoteBtn.addEventListener("click", () => this.promoteListing(listing.id));
+                }
             } else {
                 listingContainer.html('<p>Listing not found.</p>');
             }
@@ -153,7 +187,130 @@ export class ListingPage {
         }
     }
 
+    async promoteListing(listingId) {
+        // Show modal with promotion options
+        const modal = document.createElement('div');
+        modal.id = 'promotion-modal';
+        modal.innerHTML = `
+            <div class="modal-content">
+                <h3>Promote Listing</h3>
+                <select id="promotion-type">
+                    <option value="week">1 Week - 2 EUR</option>
+                    <option value="month">1 Month - 5 EUR</option>
+                </select>
+                <button id="confirm-promotion">Confirm & Pay</button>
+                <button id="cancel-promotion">Cancel</button>
+            </div>
+        `;
+        modal.style.cssText = `
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center;
+            z-index: 1000;
+        `;
+        modal.querySelector('.modal-content').style.cssText = `
+            background: white; padding: 20px; border-radius: 8px; text-align: center;
+        `;
+        document.body.appendChild(modal);
+
+        document.getElementById('cancel-promotion').addEventListener('click', () => modal.remove());
+
+        document.getElementById('confirm-promotion').addEventListener('click', async () => {
+            const type = document.getElementById('promotion-type').value;
+            const amount = type === 'week' ? 200 : 500; // in cents
+            // Use Stripe for payment
+            const stripe = Stripe('pk_test_51S7JlICjFdJ7izyJ4a9AJUPconADc29JQKxPX8MpAfM56xvONX6HfSDgpvs5I32RZjaBq1uxCzrIbwxzzfpFIAGy00e9WUDWHI'); // Replace with your test publishable key
+            const { error } = await stripe.redirectToCheckout({
+                lineItems: [{ price_data: { currency: 'eur', product_data: { name: 'Listing Promotion' }, unit_amount: amount }, quantity: 1 }],
+                mode: 'payment',
+                successUrl: window.location.href + '?promotion=success&listing=' + listingId + '&type=' + type,
+                cancelUrl: window.location.href,
+            });
+            if (error) {
+                alert('Payment failed: ' + error.message);
+            }
+        });
+    }
+
     async showEditForm(listing) {
         // Implementation for showing the edit form goes here
+    }
+
+    static async showCreate() {
+        const pictureInputs = $('#picture-inputs');
+        pictureInputs.empty();
+
+        for (let i = 0; i < 10; i++) {
+            const pictureUpload = $(`
+                <div class="picture-upload">
+                    <input type="file" id="picture-${i}" name="picture-${i}" accept="image/*">
+                    <div class="picture-preview" data-for="picture-${i}">
+                        <span>+</span>
+                    </div>
+                </div>
+            `);
+            pictureInputs.append(pictureUpload);
+        }
+
+        // Handle file selection and preview
+        $('.picture-preview').on('click', function() {
+            const inputId = $(this).data('for');
+            $(`#${inputId}`).click();
+        });
+
+        $('input[type="file"]').on('change', function() {
+            const file = this.files[0];
+            const preview = $(`.picture-preview[data-for="${this.id}"]`);
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.html(`<img src="${e.target.result}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">`);
+                };
+                reader.readAsDataURL(file);
+            } else {
+                preview.html('<span>+</span>');
+            }
+        });
+
+        // Handle form submit
+        $('#create-listing-form').on('submit', async (e) => {
+            e.preventDefault();
+            const currentUser = CacheService.get("current_user");
+            if (!currentUser || !currentUser.id) {
+                alert("You must be logged in to create a listing.");
+                return;
+            }
+            const formData = new FormData(e.target);
+            const data = {
+                title: formData.get('name'),
+                description: formData.get('description'),
+                price: parseFloat(formData.get('price')),
+                category: formData.get('category'),
+                location: formData.get('location'),
+                userId: currentUser.id
+            };
+
+            const pictures = [];
+            for (let i = 0; i < 10; i++) {
+                const file = formData.get(`picture-${i}`);
+                if (file && file.size > 0) {
+                    pictures.push(file);
+                }
+            }
+
+            try {
+                const response = await ListingService.createListing(data);
+                if (response && response.id) {
+                    if (pictures.length > 0) {
+                        await ListingService.addListingPictures(response.id, pictures);
+                    }
+                    window.location.href = `/listing/${response.id}`;
+                } else {
+                    $('#form-message').text('Failed to create listing.');
+                }
+            } catch (error) {
+                console.error('Error creating listing:', error);
+                $('#form-message').text('An error occurred. Please try again.');
+            }
+        });
     }
 }
