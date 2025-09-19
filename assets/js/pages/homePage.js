@@ -51,11 +51,11 @@ export class HomePage {
             if (sortValue === 'distance') {
                 $('#location-select').show();
                 params.location = $('#location-select').val();
-                $('#search-n-sort').addClass('distance-mode');
+                // $('#sort-full').addClass('distance-mode');
             } else {
                 $('#location-select').hide();
                 delete params.location;
-                $('#search-n-sort').removeClass('distance-mode');
+                // $('#sort-full').removeClass('distance-mode');
             }
             params.page = 1;
             this.fetchListings(params);
@@ -132,7 +132,10 @@ export class HomePage {
                                 <div>
                                     <h3>${listing.title}${isPromoted ? ' <span class="promoted-badge">Promoted</span>' : ''}</h3>
                                     <p>${listing.description ? listing.description.substring(0, 100) + '...' : 'No description available'}</p>
-                                    <p>${listing.location || 'Location not specified'} | ${listing.price.toFixed(2)} EUR</p>
+                                    <div class="listing-meta">
+                                        <div><span class="material-symbols-outlined">location_on</span>${listing.location || 'Location not specified'}</div>
+                                        <div>${listing.price.toFixed(2)} EUR</div>
+                                    </div>
                                 </div>
                             </a>
                         </li>
@@ -169,7 +172,10 @@ export class HomePage {
                                 <div>
                                     <h3>${listing.title}</h3>
                                     <p>${listing.description ? listing.description.substring(0, 100) + '...' : 'No description available'}</p>
-                                    <p>${listing.location || 'Location not specified'} | ${listing.price.toFixed(2)} EUR</p>
+                                    <div class="listing-meta">
+                                        <div><span class="material-symbols-outlined">location_on</span>${listing.location || 'Location not specified'}</div>
+                                        <div>${listing.price.toFixed(2)} EUR</div>
+                                    </div>
                                 </div>
                             </a>
                         </li>

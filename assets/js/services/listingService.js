@@ -24,7 +24,7 @@ class ListingService {
 
   static async updateListing(id, data) {
     return await HttpService.put(`/Listings/${id}`, data);
-}
+  }
 
   static async deleteListing(id) {
     return await HttpService.delete(`/Listings/${id}`);

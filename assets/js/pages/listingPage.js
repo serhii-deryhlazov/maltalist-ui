@@ -66,7 +66,10 @@ export class ListingPage {
                         <p><strong>Location:</strong> ${listing.location || 'Location not specified'}</p>
                         <p><strong>Price:</strong> ${listing.price.toFixed(2)} EUR</p>
                         <p><strong>Description:</strong> ${listing.description || 'No description available'}</p>
-                        <p><strong>Category:</strong> ${listing.category || 'None'} | <strong>Posted by:</strong> <a href="/profile/${listing.userId}">${author.userName}</a></p>
+                        <p class="listing-category">
+                            <span><strong>Category:</strong> ${listing.category || 'None'}</span>
+                            <span><strong>Posted by:</strong> <a href="/profile/${listing.userId}">${author.userName}</a></span>
+                        </p>
                 `;
 
                 const currentUser = CacheService.get("current_user");
@@ -152,7 +155,7 @@ export class ListingPage {
                 // Edit Listing handler
                 const editBtn = document.getElementById("edit-listing-btn");
                 if (editBtn) {
-                    editBtn.addEventListener("click", () => this.showEditForm(listing));
+                    editBtn.addEventListener("click", () => this.showEditForm(listing, listingContainer));
                 }
 
                 // Delete Listing handler
@@ -231,17 +234,389 @@ export class ListingPage {
         });
     }
 
-    async showEditForm(listing) {
-        // Implementation for showing the edit form goes here
+  showEditForm(listing, listingContainer){
+        // Build edit form with current data as placeholder and image previews
+        let editFormHtml = `
+            <style>
+                #edit-listing-form {
+                    max-width: 800px;
+                    margin: 0 auto;
+                    padding: 30px;
+                    background: #fff;
+                    border-radius: 12px;
+                    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+                }
+
+                #edit-listing-form h3 {
+                    text-align: center;
+                    color: #004779;
+                    margin-bottom: 30px;
+                    font-size: 1.8rem;
+                    font-weight: 600;
+                }
+
+                #edit-listing-form div {
+                    margin-bottom: 20px;
+                }
+
+                #edit-listing-form label {
+                    display: block;
+                    margin-bottom: 8px;
+                    font-weight: 600;
+                    color: #333;
+                    font-size: 0.95rem;
+                }
+
+                #edit-listing-form input,
+                #edit-listing-form textarea,
+                #edit-listing-form select {
+                    width: 100%;
+                    padding: 12px 16px;
+                    border: 2px solid #e1e5e9;
+                    border-radius: 8px;
+                    font-size: 1rem;
+                    transition: all 0.3s ease;
+                    box-sizing: border-box;
+                    background: #fff;
+                }
+
+                #edit-listing-form input:focus,
+                #edit-listing-form textarea:focus,
+                #edit-listing-form select:focus {
+                    outline: none;
+                    border-color: #007bff;
+                    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+                }
+
+                #edit-listing-form textarea {
+                    resize: vertical;
+                    min-height: 120px;
+                }
+
+                #edit-listing-form select {
+                    cursor: pointer;
+                }
+
+                #edit-picture-inputs {
+                    display: grid;
+                    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+                    gap: 15px;
+                    margin-top: 15px;
+                }
+
+                .picture-upload-wrapper {
+                    position: relative;
+                    width: 120px;
+                    height: 120px;
+                    border: 2px dashed #ddd;
+                    border-radius: 8px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    cursor: pointer;
+                    transition: all 0.3s ease;
+                    background: #fafafa;
+                    margin: 5px;
+                }
+
+                .picture-upload-wrapper:hover {
+                    border-color: #007bff;
+                    background: #f0f8ff;
+                }
+
+                .picture-upload-wrapper.has-image {
+                    border-style: solid;
+                    border-color: #28a745;
+                    background: #f8fff8;
+                }
+
+                .upload-placeholder {
+                    font-size: 36px;
+                    color: #999;
+                    font-weight: bold;
+                    pointer-events: none;
+                }
+
+                .picture-upload-input {
+                    position: absolute;
+                    opacity: 0;
+                    width: 100%;
+                    height: 100%;
+                    cursor: pointer;
+                }
+
+                .picture-upload-wrapper img {
+                    max-width: 100%;
+                    max-height: 100%;
+                    border-radius: 6px;
+                    object-fit: cover;
+                }
+
+                .remove-btn {
+                    position: absolute;
+                    top: -8px;
+                    right: -8px;
+                    width: 24px;
+                    height: 24px;
+                    border-radius: 50%;
+                    background: #dc3545;
+                    color: white;
+                    border: none;
+                    cursor: pointer;
+                    font-size: 16px;
+                    font-weight: bold;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    transition: background 0.2s;
+                }
+
+                .remove-btn:hover {
+                    background: #c82333;
+                }
+
+                #edit-listing-form button[type="submit"] {
+                    width: 100%;
+                    padding: 14px 24px;
+                    background: linear-gradient(135deg, #004779 0%, #0066a0 100%);
+                    color: white;
+                    border: none;
+                    border-radius: 8px;
+                    font-size: 1.1rem;
+                    font-weight: 600;
+                    cursor: pointer;
+                    transition: all 0.3s ease;
+                    margin-top: 10px;
+                }
+
+                #edit-listing-form button[type="submit"]:hover {
+                    background: linear-gradient(135deg, #003d63 0%, #005280 100%);
+                    transform: translateY(-2px);
+                    box-shadow: 0 4px 12px rgba(0, 71, 121, 0.3);
+                }
+
+                #edit-listing-form button[type="submit"]:active {
+                    transform: translateY(0);
+                }
+
+                #edit-form-message {
+                    text-align: center;
+                    margin-top: 20px;
+                    padding: 12px;
+                    border-radius: 6px;
+                    font-weight: 500;
+                    min-height: 20px;
+                }
+
+                #edit-form-message.success {
+                    background: #d1fae5;
+                    color: #065f46;
+                    border: 1px solid #a7f3d0;
+                }
+
+                #edit-form-message.error {
+                    background: #fee2e2;
+                    color: #991b1b;
+                    border: 1px solid #fecaca;
+                }
+
+                @media (max-width: 600px) {
+                    #edit-listing-form {
+                        padding: 20px;
+                        margin: 10px;
+                    }
+
+                    #edit-picture-inputs {
+                        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+                        gap: 10px;
+                    }
+
+                    .picture-upload-wrapper {
+                        width: 100px;
+                        height: 100px;
+                    }
+                }
+            </style>
+
+            <h3>Edit Listing</h3>
+            <form id="edit-listing-form">
+                <div>
+                    <label for="edit-name">Title:</label>
+                    <input type="text" id="edit-name" name="name" value="${listing.title}" required>
+                </div>
+                <div>
+                    <label for="edit-description">Description:</label>
+                    <textarea id="edit-description" name="description" required>${listing.description}</textarea>
+                </div>
+                <div>
+                    <label for="edit-price">Price (EUR):</label>
+                    <input type="number" id="edit-price" name="price" step="0.01" min="0" value="${listing.price}" required>
+                </div>
+                <div>
+                    <label for="edit-category">Category:</label>
+                    <select id="edit-category" name="category" required>
+                        <option value="">Select a category</option>
+                        <option value="Electronics" ${listing.category==='Electronics' ? 'selected' : ''}>Electronics</option>
+                        <option value="Furniture" ${listing.category==='Furniture' ? 'selected' : ''}>Furniture</option>
+                        <option value="Clothing" ${listing.category==='Clothing' ? 'selected' : ''}>Clothing</option>
+                        <option value="Vehicles" ${listing.category==='Vehicles' ? 'selected' : ''}>Vehicles</option>
+                        <option value="Real Estate" ${listing.category==='Real Estate' ? 'selected' : ''}>Real Estate</option>
+                        <option value="Sports&Hobby" ${listing.category==='Sports&Hobby' ? 'selected' : ''}>Sports&Hobby</option>
+                        <option value="Books" ${listing.category==='Books' ? 'selected' : ''}>Books</option>
+                        <option value="Other" ${listing.category==='Other' ? 'selected' : ''}>Other</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="edit-location">Location:</label>
+                    <input type="text" id="edit-location" name="location" value="${listing.location || ''}" required>
+                </div>
+                <div>
+                    <label>Add New Pictures (up to 10):</label>
+                    <div id="edit-picture-inputs"></div>
+                </div>
+                <button type="submit">Save Changes</button>
+            </form>
+            <div id="edit-form-message"></div>
+        `;
+        listingContainer.html(editFormHtml);
+
+        // Picture input logic
+        const editPictureInputsDiv = document.getElementById('edit-picture-inputs');
+        const editPictureFiles = Array(10).fill(null);
+
+        for (let i = 0; i < 10; i++) {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'picture-upload-wrapper';
+
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            input.className = 'picture-upload-input';
+            input.dataset.idx = i;
+
+            const placeholder = document.createElement('div');
+            placeholder.className = 'upload-placeholder';
+            placeholder.innerHTML = '+';
+
+            const preview = document.createElement('img');
+            preview.style.display = 'none';
+
+            const removeBtn = document.createElement('button');
+            removeBtn.type = 'button';
+            removeBtn.className = 'remove-btn';
+            removeBtn.innerHTML = '×';
+            removeBtn.style.display = 'none';
+
+            // Handle file input change
+            input.addEventListener('change', function() {
+                const idx = parseInt(this.dataset.idx);
+                if (this.files && this.files[0]) {
+                    const file = this.files[0];
+                    if (!file.type.startsWith('image/')) {
+                        alert('Only image files are allowed.');
+                        this.value = '';
+                        preview.style.display = 'none';
+                        placeholder.style.display = 'block';
+                        removeBtn.style.display = 'none';
+                        editPictureFiles[idx] = null;
+                        wrapper.classList.remove('has-image');
+                        return;
+                    }
+
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        preview.src = e.target.result;
+                        preview.style.display = 'block';
+                        placeholder.style.display = 'none';
+                        removeBtn.style.display = 'block';
+                        wrapper.classList.add('has-image');
+                    };
+                    reader.readAsDataURL(file);
+
+                    editPictureFiles[idx] = file;
+                } else {
+                    preview.style.display = 'none';
+                    placeholder.style.display = 'block';
+                    removeBtn.style.display = 'none';
+                    editPictureFiles[idx] = null;
+                    wrapper.classList.remove('has-image');
+                }
+            });
+
+            // Handle remove button
+            removeBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                input.value = '';
+                preview.style.display = 'none';
+                placeholder.style.display = 'block';
+                removeBtn.style.display = 'none';
+                editPictureFiles[i] = null;
+                wrapper.classList.remove('has-image');
+            });
+
+            // Handle wrapper click to trigger file input
+            wrapper.addEventListener('click', function() {
+                input.click();
+            });
+
+            wrapper.appendChild(input);
+            wrapper.appendChild(placeholder);
+            wrapper.appendChild(preview);
+            wrapper.appendChild(removeBtn);
+            editPictureInputsDiv.appendChild(wrapper);
+        }
+
+        // Edit form submission
+        document.getElementById('edit-listing-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const editFormMessage = document.getElementById('edit-form-message');
+            editFormMessage.textContent = '';
+
+            try {
+                // First update the basic listing data
+                const basicData = {
+                    title: document.getElementById('edit-name').value,
+                    description: document.getElementById('edit-description').value,
+                    price: parseFloat(document.getElementById('edit-price').value),
+                    category: document.getElementById('edit-category').value,
+                    location: document.getElementById('edit-location').value,
+                    userId: CacheService.get("current_user").id
+                };
+
+                const response = await ListingService.updateListing(listing.id, basicData);
+                
+                // Then handle pictures if any new ones were uploaded
+                const newPictures = editPictureFiles.filter(file => file !== null);
+                if (newPictures.length > 0) {
+                    await ListingService.addListingPictures(listing.id, newPictures);
+                }
+
+                if (response) {
+                    editFormMessage.textContent = 'Listing updated successfully!';
+                    editFormMessage.style.color = 'green';
+                    setTimeout(() => {
+                        this.show();
+                    }, 1500);
+                } else {
+                    editFormMessage.textContent = 'Failed to update listing. Please try again.';
+                    editFormMessage.style.color = 'red';
+                }
+            } catch (error) {
+                console.error('Update listing error:', error);
+                editFormMessage.textContent = 'Error updating listing.';
+                editFormMessage.style.color = 'red';
+            }
+        });
     }
 
     static async showCreate() {
         const pictureInputs = $('#picture-inputs');
         pictureInputs.empty();
 
+        // Create all 10 inputs but hide them initially
         for (let i = 0; i < 10; i++) {
             const pictureUpload = $(`
-                <div class="picture-upload">
+                <div class="picture-upload" id="upload-${i}" style="${i > 0 ? 'display: none;' : ''}">
                     <input type="file" id="picture-${i}" name="picture-${i}" accept="image/*">
                     <div class="picture-preview" data-for="picture-${i}">
                         <span>+</span>
@@ -260,14 +635,31 @@ export class ListingPage {
         $('input[type="file"]').on('change', function() {
             const file = this.files[0];
             const preview = $(`.picture-preview[data-for="${this.id}"]`);
+            const currentIndex = parseInt(this.id.split('-')[1]);
+            
             if (file) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     preview.html(`<img src="${e.target.result}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">`);
                 };
                 reader.readAsDataURL(file);
+                
+                // Show next input if it exists and is hidden
+                if (currentIndex < 9) {
+                    $(`#upload-${currentIndex + 1}`).show();
+                }
             } else {
                 preview.html('<span>+</span>');
+                
+                // Hide subsequent inputs if this one is cleared
+                for (let i = currentIndex + 1; i < 10; i++) {
+                    const nextInput = $(`#picture-${i}`)[0];
+                    if (!nextInput.files[0]) {
+                        $(`#upload-${i}`).hide();
+                    } else {
+                        break; // Stop if we find a filled input
+                    }
+                }
             }
         });
 
